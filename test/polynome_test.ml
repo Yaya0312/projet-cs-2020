@@ -1,0 +1,153 @@
+open Polynome
+let p1 = [(0,2.);(1,-1.);(3,5.)];;
+let p2 = [(0,1.);(1,-1.);(2,1.);(3,1.);(4,2.)];;
+let alcotestPoly = Alcotest.(list (pair int (float 0.0001)));;
+
+(*** Coeff ********************************************************************)
+
+let test_coef  = Alcotest.check (Alcotest.float 0.) "coef";;
+
+let test_coef_neg_p1 () = test_coef 0. (coef p1 (-1)) ;;
+let test_coef_in_p1  () = test_coef 2. (coef p1 0) ;;
+let test_coef_greater_p1 () = test_coef 0. (coef p1 8) ;;
+let test_coef_neg_p2 () = test_coef 0. (coef p2 (-1)) ;;
+let test_coef_in_p2 () = test_coef 1. (coef p2 3) ;;
+let test_coef_greater_p2 () = test_coef 0. (coef p2 8) ;;
+
+let coef_tests =
+  [ 
+    ("coef with negative deg p1", `Quick, test_coef_neg_p1);
+    ("coef with in deg p1", `Quick, test_coef_in_p1);
+    ("coef with greater deg p1", `Quick, test_coef_greater_p1);
+    ("coef with negative deg p2", `Quick, test_coef_neg_p1);
+    ("coef with in deg p2", `Quick, test_coef_in_p1);
+    ("coef with greater deg p2", `Quick, test_coef_greater_p1);
+  ];;
+
+(*** Sum **********************************************************************)
+let test_sum = Alcotest.check alcotestPoly "sum";;
+
+let test_sum_p1_p2 () = test_sum  (p1 ^+ p2)  [(0,3.);(1,-2.);(2,1.);(3,6.);(4,2.)];;
+let test_sum_p1_empty () = test_sum (p1 ^+ []) [(0,2.);(1,-1.);(3,5.)];;
+
+let sum_tests =
+  [ 
+    ("p1 + p2", `Quick, test_sum_p1_p2);
+    ("p1 + []", `Quick, test_sum_p1_empty);
+  ];;
+
+(*** multCoeff ****************************************************************)
+
+let test_multCoef  = Alcotest.check alcotestPoly "coef";;
+
+let test_multCoef_0 () = test_multCoef [] (multCoeff p1 0.);;
+let test_multCoef_2 () = test_multCoef [(0,4.);(1,-2.);(3,10.)] (multCoeff p1 2.);;
+let test_multCoef_neg2 () = test_multCoef [(0,-4.);(1,2.);(3,-10.)] (multCoeff p1 (-2.));;
+
+let multCoef_test =
+  [
+    ("multCoef with 0", `Quick, test_multCoef_0);
+    ("multCoef with 2", `Quick, test_multCoef_2);
+    ("multCoef with -2", `Quick, test_multCoef_neg2);
+  ];;
+
+(*** degree *******************************************************************)
+
+let test_degree = Alcotest.check Alcotest.int "degree"
+
+let test_degree_p1 () = test_degree 3 (degre p1);;
+let test_degree_p2 () = test_degree 4 (degre p2);;
+
+let degree_tests =
+  [ 
+    ("degree p1", `Quick, test_degree_p1);
+    ("degree p2", `Quick, test_degree_p2);
+  ];;
+
+(*** multXn *******************************************************************)
+
+let test_multXn = Alcotest.check alcotestPoly "multXn";;
+
+let test_multXn_p1_0 () = test_multXn p1 (multXn p1 0);;
+let test_multXn_p1_1 () = test_multXn [(1,2.);(2,-1.);(4,5.)] (multXn p1 1);;
+
+let multXn_tests =
+  [ 
+    ("multXn p1 with 0", `Quick, test_multXn_p1_0);
+    ("multXn p1 with 1", `Quick, test_multXn_p1_1);
+  ];;
+
+(*** cut **********************************************************************)
+
+let test_cut = Alcotest.check (Alcotest.pair alcotestPoly alcotestPoly) "multXn";;
+
+let test_cut_p1_neg1 () = test_cut ([],[(1,2.);(2,-1.);(4,5.)]) (cut p1 (-1));;
+let test_cut_p1_1 () = test_cut  ([(0,2.)],[(0,-1.);(2,5.)]) (cut p1 1);;
+let test_cut_p1_2 () = test_cut  ([(0,2.);(1,-1.)],[(1,5.)]) (cut p1 2);;
+let test_cut_p1_5 () = test_cut  ([(0,2.);(1,-1.);(3,5.)],[]) (cut p1 5);;
+
+let cut_tests =
+  [
+    ("cut p1 with -1", `Quick, test_cut_p1_neg1);
+    ("cut p1 with 1", `Quick, test_cut_p1_1);
+    ("cut p1 with 2", `Quick, test_cut_p1_2);
+    ("cut p1 with 5", `Quick, test_cut_p1_5);
+  ];;
+
+(*** mult *********************************************************************)
+
+let test_mult = Alcotest.check alcotestPoly "mult";;
+let r1 =[(0, 2.); (1, (-3.)); (2, 3.); (3, 6.); (4, (-2.)); (5, 3.); (6, 5.); (7, 10.)];;
+let r2 =[(0, 4.); (1, -4.); (2, 1.); (3, 20.); (4, -10.); (6, 25.)];;
+let r3 =[(0, 1.); (1, -2.); (2, 3.); (4, 3.); (5, -2.); (6, 5.); (7, 4.); (8, 4.)];;
+let test_mult_p1_p2 () = test_mult r1 (p1 ^* p2);;
+let test_mult_p1_p1 () = test_mult r2 (p1 ^* p1);;
+let test_mult_p2_p2 () = test_mult r3 (p2 ^* p2);;
+let test_mult_p1_empty () = test_mult [] (p1 ^* []);;
+let test_mult_empty_p1 () = test_mult [] ([] ^* p1);;
+let test_mult_p2_empty () = test_mult [] (p2 ^* []);;
+let test_mult_empty_p2 () = test_mult [] ([] ^* p2);;
+
+let mult_tests =
+  [
+    (" p1 * p2", `Quick, test_mult_p1_p2);
+    (" p1 * p1", `Quick, test_mult_p1_p1);
+    (" p2 * p2", `Quick, test_mult_p2_p2);
+    (" p1 * []", `Quick, test_mult_p1_empty);
+    (" [] * p1", `Quick, test_mult_empty_p1);
+    (" p2 * []", `Quick, test_mult_p2_empty);
+    (" [] * p2", `Quick, test_mult_empty_p2);
+  ];;
+
+(*** renverse *****************************************************************)
+let test_renverse = Alcotest.check alcotestPoly "renverse";;
+
+let test_renverse_2_p1 () = test_renverse [(-1,5.);(1,-1.);(2,2.)] (renverse 2 p1);;
+
+let renverse_tests = 
+  [
+     (" renv p1 with 2", `Quick, test_renverse_2_p1);
+  ];;
+
+(*** modulo *******************************************************************)
+(* let test_modulo = Alcotest.check alcotestPoly "modulo";;
+
+let test_modulo_2_p1 () = test_modulo [(-1,5.);(1,-1.);(2,2.)] (modulo 2 p1);;
+
+let modulo_modulo = 
+  [
+     (" renv p1 with 2", `Quick, test_modulo_2_p1);
+  ];; *)
+
+
+(*** horner *******************************************************************)
+let test_horner = Alcotest.check  (Alcotest.float 0.00001) "horner";;
+
+let test_horner_p1_0 () = test_horner 2. (horner p1 0.) ;;
+let test_horner_p1_2 () = test_horner 40. (horner p1 2.) ;;
+
+let horner_tests = 
+  [
+     (" horner p1 with 0.", `Quick, test_horner_p1_0);
+     (" horner p1 with 2.", `Quick, test_horner_p1_2);
+  ];;

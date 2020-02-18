@@ -1,0 +1,10 @@
+(executable
+  (name tests)
+  (libraries alcotest polynome)
+)
+
+(alias
+  (name runtest)
+  (deps tests.exe)
+  (action (run %{deps} -q --color=always))
+  )
