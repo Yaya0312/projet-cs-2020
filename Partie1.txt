@@ -1,4 +1,4 @@
-PARTIE 2 : L'algo de Karatsuba revisité
+PARTIE 1 : L'algo de Karatsuba revisité
 
 1) 
 P(0) 	= P0 + P1 * 0^d 
