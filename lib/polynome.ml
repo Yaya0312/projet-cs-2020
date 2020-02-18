@@ -142,3 +142,5 @@ let random_poly (deg:int) (maxcoef:int) =
     aux r (pos+1)
   in aux [] 0
 ;;
+
+(* test *)
