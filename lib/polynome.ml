@@ -92,10 +92,10 @@ let modulo (p:poly) (deg:int) =
   List.map (fun (d,c) -> (d-deg,c)) p
 ;;
 
-let (^@) = multCoeff;;
+(* let (^@) = multCoeff;; *)
 
 (* Todo inversion *)
-let inversion (p:poly) (pos_max:int) =
+(* let inversion (p:poly) (pos_max:int) =
   let rec aux (g_i:int) (pos:int) (p1:poly) = 
     let g_i = ((p^@2.)^-(p^*g_i^*g_i)) in
     if (pos < pos_max) then 
@@ -103,7 +103,7 @@ let inversion (p:poly) (pos_max:int) =
     else 
       p1
   in aux 1 0
-;;
+;; *)
 
 (* Complexity O(1) *)
 let mono_to_string (m:monome) = match m with
