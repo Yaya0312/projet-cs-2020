@@ -1,0 +1,19 @@
+PARTIE 1 : L'algo de Karatsuba revisité
+
+1) 
+P(0) 	= P0 + P1 * 0^d 
+     	= P0 + P1 * 0 
+	= P0
+
+Soit P(X) = p0 + p1 * X + ... + pd * X^d
+
+On veut évaluer la valeur de P en +∞, or, L’évaluation en +∞ d’un polynôme P consiste à évaluer
+en 0 le polynôme X^(degP) * P(1/X)
+
+Soit P'(X) = X^(degP) * P(1/X)
+
+
+P(+∞) <=> P'(0)
+
+P'(0) 	= 0^(degP) * P(1/0)
+	= 0^(d) * (p0 + p1 * 1/0 + ... + pd * 1/0^d)
