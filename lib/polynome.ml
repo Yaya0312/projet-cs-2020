@@ -79,6 +79,25 @@ let rec (^*) (p1:poly) (p2:poly) =  match p1, p2 with
   c0 ^+ (c1 ^^ mk) ^+ (c2 ^^ k)
 ;;
 
+let get_litle_size_first (p1:poly) (p2:poly) =
+    let len_p1 = List.length p1 and
+        len_p2 = List.length p2 in
+    if (len_p1 > len_p2) then
+      p2,p1
+    else
+      p1,p2
+;;
+
+(* Complexity n² n étant la longueur de la liste du plus petit polynome *)
+let mult_naive (p1:poly) (p2:poly) = 
+  let p1, p2 = get_litle_size_first p1 p2 in
+  let rec aux p1 p2 = match p1 with
+  | [] -> []
+  | e1::[] -> multCoeff (multXn p2 (degre [e1])) (snd e1)
+  | e1::lst -> (aux [e1] p2) ^+ (aux lst p2)
+  in aux p1 p2
+;;
+
 (* Complexity O(n) n étant la longueur de la liste p*)
 let renverse (order:int) (p:poly) = 
   if (degre p) <= order then 
@@ -124,21 +143,51 @@ let print_poly (p:poly) =
 let horner (p:poly) (x:float) = 
     let rec aux (acc:float) (pos:int) (p:poly) = match p with 
     | [] -> acc
-    | (d,c)::lst when d=pos -> c +. (x *. (aux acc (pos+1) lst))
+    | (d,c)::lst when d = pos -> c +. (x *. (aux acc (pos+1) lst))
     | _  -> (coef p pos) +. (x *. (aux acc (pos+1) p))
     in aux 0. 0 p
 ;;
 
 (* Complexity O(n) n étant le degré maximal possible du polynome *)
-let random_poly (deg:int) (maxcoef:int) = 
+let random_poly (deg:int) (maxcoef:float) = 
   let rec aux (r:poly) (pos:int) = match pos with
   | _ when pos = deg -> (List.rev r)
   | _ -> 
   let has_coef = Random.bool () in
-  let coef = float_of_int (Random.int (maxcoef)) in
+  let coef = Random.float maxcoef in
   if (has_coef) then 
     aux ((pos, coef)::r) (pos +1)
   else 
     aux r (pos+1)
   in aux [] 0
+;;
+
+(* VERIFIER ALPHA ET SES VALEURS *)
+let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
+  |([], _) | (_, []) -> []
+  |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
+  |([(0, b)], p)  |(p, [(0, b)]) -> (p ^: b)
+  | _ ->
+    let k = (max (degre p1) (degre p2)) in
+    let k = k + 3 - (k mod 3) in
+    let mk = (k/3) in
+    let p1_0, p_temp = cut p1 mk in
+    let p1_1, p1_2 = cut p_temp mk in
+    let p2_0, p_temp = cut p2 mk in
+    let p2_1, p2_2 = cut p_temp mk in
+    let n = degre p1_0 + 1 in
+    let r0 = toom_cook p1_0 p2_0 alpha in 
+    let r1 = (toom_cook (p1_0 ^+ p1_1 ^+ p1_2) (p2_0 ^+ p2_1 ^+ p2_2)) in
+    let r2 = (toom_cook (p1_0 ^- p1_1 ^+ p1_2) (p2_0 ^- p2_1 ^+ p2_2)) in
+    let r3 = (toom_cook (p1_0 ^+ (p1_1 ^: alpha) ^+ (p1_2 ^: (alpha*.alpha))) (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha*.alpha)))) in
+    let r4 = toom_cook p1_2 p2_2 in
+    let res0 = r0 in
+    let res1_0 = ((r0 ^: -1.) ^: (1./.alpha)) in
+    let res1_1 = ((r1 ^: (1./.2.)) ^: (alpha /. (alpha -. 1.))) in
+    let res1 = res1_0 ^+ res1_1 ^- ((r2 ^: 1./.2.) ^: (alpha /. (alpha +. 1.))) ^+ (r4 ^: alpha) ^- (r3 ^: (alpha *. (alpha *. alpha -. 1.))) in
+    let res2 = ((r1 ^+ r2) ^: (1./.2.)) ^- r0 ^- r4 in
+    let res3 = (r0 ^: (1./.alpha)) ^- (r1 ^: 1./.(2. * (alpha -. 1.))) ^- (r2 ^: 1./.(2. * (alpha +. 1.))) ^- (r4 ^: alpha) ^+ (r3 ^: (alpha *. (alpha *. alpha -. 1.))) in
+    let res4 = r4 in
+    let res = res0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2*n)) ^+ (res3 ^^ (3*n)) ^+ (res4 ^^ (4*n)) in
+    res
 ;;
