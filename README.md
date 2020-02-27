@@ -23,3 +23,6 @@ https://www.overleaf.com/3422683814qpnfwpctcnxv
 
 Projet :  
 https://cdn.discordapp.com/attachments/669955518370021378/679683215987965977/projet_2020.pdf
+
+Documentations :  
+https://yaya0312.github.io/projet-cs-2020/docs/index.html
