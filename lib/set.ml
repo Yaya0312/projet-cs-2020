@@ -1,4 +1,5 @@
 exception MaxLowerThanMin;;
+(** TOOLS *)
 
 (** Interverti les valeurs a[i] a[j] *)
 let swap (a:'a array) (i:int) (j:int) =
@@ -19,25 +20,20 @@ let make_array min max =
     Array.init (r + 1) (fun i -> (i + min) );;
 ;;
 
-(** Réalise l'ensemble répondant à la question 1 *)
-let make_custom_array = 
-    let a1 = make_array 0 10 in
-    let a2 = make_array 11 10000 in
-    ignore (shuffle a2) in
-    let a2 = Array.sub a2 0 ((1000 - Array.length a1)) in
-    Array.append a1 a2
-;;
+(** END TOOLS *)
 
-(** Affiche sur la sortie standard le temps d'execution moyen pour les différents algo pour le deg d *)
+(** Affiche sur la sortie standard le temps d'execution moyen pour les 
+        différents algo pour le deg d *)
 let print_time_mult ht deg =
     let (k,t,p)= (Hashtbl.find ht deg) in
-    let sentences = "Temps d'éxcution moyen pour le deg "^ deg ^ "\n" in
-    let karatsuba = "karatsuba" ^ (string_of_float k) ^ "\n" in
-    let tom_cook = "toom3" ^ (string_of_float t) ^ "\n" in
+    let sentences = "Temps d'éxcution moyen pour le deg " ^ 
+    (string_of_int deg) ^ "\n" in
+    let karatsuba = "Karatsuba " ^ (string_of_float k) ^ " sec \n" in
+    let tom_cook = "Toom 3 " ^ (string_of_float t) ^ " sec \n" in
     print_string (sentences ^ karatsuba ^ tom_cook)
 ;;
 
-
+(** creation d'un  *)
 let create_array_polynome num deg = 
     Array.init (num + 1) (fun _ -> random_poly deg max_float);;
 ;;
@@ -48,9 +44,9 @@ let make_hashtable set h =
 ;;
 
 (** Pioche deux element dans la liste *)
-let pick (a:a' array) =
-    let random1 = random.int (Array.length a) and
-        random2 = random.int (Array.length a) in
+let pick a =
+    let random1 = Random.int (Array.length a) and
+        random2 = Random.int (Array.length a) in
     Array.get a random1, Array.get a random2
 ;;
 
@@ -62,24 +58,22 @@ let time_fun func arg =
   finish_time -. start_time
 ;;
 
+time_fun (fun a -> random_poly (fst a) (snd a)) (20000000,1000.);;
 
+let run k v = 
+    let p1,p2 = pick v in
+    let tk = (time_fun (fun a -> (^*) (fst a) (snd a)) (p1,p2)) in
 
-(* Effectue l'operation plusieurs fois avoir une moyenne *)
-let average_time func num = 
-    let l = [] in
-    for i = 0 to 10 do
-        let l = List.append l (time_fun func) in
-    ((List.fold_left (+.) 0.)/.(float_of_int (List.length l)))
-    done;
+    Hashtbl.add time_table k tk (* TODO (tk) -> (tk, tt ,tn) *)
 ;;
 
-(* let run k v = 
-    let p1,p2 = pick v in
-    let tk = average_time karatsuba in
-    let tt = average_time tom_cook in 
-    Hashtbl.add k [tk, tt, ...] 
-;;  *)
+let main =
+    let a1 = make_array 0 10 in
+    let a2 = make_array 11 5000 in (* TODO remplacer par 10000 *)
+    shuffle a2;
+    let a2 = Array.sub a2 0 ((1000 - Array.length a1)) in
+    Array.append a1 a2;
 
 
-(* On effectue 45 fois l'operation pour chaque multiplication *)
-let make_time_ht = let Hashtbl.iter run ;;
+    Hashtbl.iter run
+;;
