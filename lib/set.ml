@@ -16,14 +16,14 @@ let shuffle a =
 let make_array min max =
     let r = max - min in
     if r < 0 then raise MaxLowerThanMin else 
-    Array.init (r+1) (fun i -> (i+min) );;
+    Array.init (r + 1) (fun i -> (i + min) );;
 ;;
 
 (** Réalise l'ensemble répondant à la question 1 *)
 let make_custom_array = 
     let a1 = make_array 0 10 in
     let a2 = make_array 11 10000 in
-    shuffle a2;
+    ignore (shuffle a2) in
     let a2 = Array.sub a2 0 ((1000 - Array.length a1)) in
     Array.append a1 a2
 ;;
@@ -36,6 +36,7 @@ let print_time_mult ht deg =
     let tom_cook = "toom3" ^ (string_of_float t) ^ "\n" in
     print_string (sentences ^ karatsuba ^ tom_cook)
 ;;
+
 
 let create_array_polynome num deg = 
     Array.init (num + 1) (fun _ -> random_poly deg max_float);;
@@ -54,24 +55,30 @@ let pick (a:a' array) =
 ;;
 
 (** Retourne le temps que la fonction à mis pour s'executer *)
-let time_fun func =
+let time_fun func arg =
   let start_time = Sys.time () in
-  ignore func;
+  ignore (func arg);
   let finish_time = Sys.time () in
   finish_time -. start_time
 ;;
 
+
+
 (* Effectue l'operation plusieurs fois avoir une moyenne *)
 let average_time func num = 
-    (time_fun func)/. num
+    let l = [] in
+    for i = 0 to 10 do
+        let l = List.append l (time_fun func) in
+    ((List.fold_left (+.) 0.)/.(float_of_int (List.length l)))
+    done;
 ;;
 
-let run k v = 
+(* let run k v = 
     let p1,p2 = pick v in
     let tk = average_time karatsuba in
     let tt = average_time tom_cook in 
     Hashtbl.add k [tk, tt, ...] 
-;; 
+;;  *)
 
 
 (* On effectue 45 fois l'operation pour chaque multiplication *)
