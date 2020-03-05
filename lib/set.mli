@@ -9,8 +9,11 @@ val swap : 'a array -> int -> int -> unit
 val shuffle : 'a array -> unit
 (** 
     Mélange le tableau
-    Complexité O(n)
+    Complexité O(n) -  Parcours le tableau de longueur n
 *)
 
 val make_array : int -> int -> unit
-(** Génére un tableau de min à max *)
+(** 
+    Génére un tableau de min à max (longueur min - max + 1)
+    Complexity O(n) - Initialise le tableau de longueur n
+*)

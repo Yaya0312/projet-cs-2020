@@ -38,11 +38,6 @@ let create_array_polynome num deg =
     Array.init (num + 1) (fun _ -> random_poly deg max_float);;
 ;;
 
-(** Permet de generer la table de hachage contenant les 10 polynomes pour chaques degre de l'ensemble set *)
-let make_hashtable set h =
-    Array.iter (fun a -> Hashtbl.add h a (create_array_polynome 10 a)) set
-;;
-
 (** Pioche deux element dans la liste *)
 let pick a =
     let random1 = Random.int (Array.length a) and
@@ -58,12 +53,9 @@ let time_fun func arg =
   finish_time -. start_time
 ;;
 
-time_fun (fun a -> random_poly (fst a) (snd a)) (20000000,1000.);;
-
 let run k v = 
     let p1,p2 = pick v in
     let tk = (time_fun (fun a -> (^*) (fst a) (snd a)) (p1,p2)) in
-
     Hashtbl.add time_table k tk (* TODO (tk) -> (tk, tt ,tn) *)
 ;;
 
@@ -73,7 +65,7 @@ let main =
     shuffle a2;
     let a2 = Array.sub a2 0 ((1000 - Array.length a1)) in
     Array.append a1 a2;
-
-
+    let ht = Hashtbl.create 1000 in
+    Array.iter (fun a -> Hashtbl.add h a (create_array_polynome 10 a)) set;
     Hashtbl.iter run
 ;;
