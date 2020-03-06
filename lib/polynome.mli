@@ -43,4 +43,11 @@ val print_poly : poly -> unit
 val horner : poly -> float -> float
 
 (** Retourne un polynome généré de degre maximal deg et de coef max maxcoef *)
-val random_poly : int -> int -> poly
+val random_poly : int -> float -> poly
+
+(** Retourne les polynomes multiplié par la méthode naive *)
+val mult_naive : poly -> poly -> poly
+
+(** Retourne les polynomes multiplié par la méthode toom cook3 *)
+val toom_cook : poly -> poly -> float -> poly
+

@@ -23,7 +23,7 @@ let make_array (min:int) (max:int) : int array =
 (** END TOOLS *)
 
 (** creation d'un  *)
-let create_array_polynome (num:int) (deg:int) : int array = 
+let create_array_polynome (num:int) (deg:int) = 
     Array.init (num + 1) (fun _ -> random_poly deg max_float);;
 ;;
 
@@ -60,7 +60,8 @@ let export_latex ht (file:string) =
     close_out oc;
 ;;
 
-let main =
+
+(* let main =
     let a1 = make_array 0 10 in
     let a2 = make_array 11 2000 in (* TODO remplacer par 10000 *)
     shuffle a2;
@@ -68,7 +69,20 @@ let main =
     let a1 = Array.append a1 a2;
     let ht = Hashtbl.create 1000 in
     Array.iter (fun a -> Hashtbl.add ht a (default_value_ht a)) a1;
+    print_string "Debut calcule";
     Hashtbl.filter_map_inplace run ht;
-    print_float (snd (Hashtbl.find ht 3)).(1)
-    (* print_string string_of_float (snd (Hashtbl.find ht 3)).(1) *)
+    export_latex ht "mult.dat"
+;; *)
+
+let main =
+    let a1 = make_array 0 10;;
+    let a2 = make_array 11 2000;;
+    shuffle a2;;
+    let a2 = Array.sub a2 0 ((1000 - (Array.length a1)));;
+    let a1 = Array.append a1 a2;;
+    let ht = Hashtbl.create 1000;;
+    Array.iter (fun a -> Hashtbl.add ht a (default_value_ht a)) a1;;
+    print_string "Debut calcule";;
+    Hashtbl.filter_map_inplace run ht;;
+    export_latex ht "mult.dat";;
 ;;
