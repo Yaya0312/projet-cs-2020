@@ -20,7 +20,7 @@ val addition_abs : (int*int) list -> (int*int)list -> (int*int)list
 (** permet d'aditioner deux grand nombres naturel*)
 
 val soustraction_abs : (int*int) list -> (int*int)list -> (int*int)list
-(** permet la soustraction de  deux grand nombres naturel*)
+(** permet la soustraction de deux grand nombres naturel*)
 
 val addition_gdnb : gdnb -> gdnb -> gdnb
 
