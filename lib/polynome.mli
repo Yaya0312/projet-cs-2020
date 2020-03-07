@@ -3,51 +3,107 @@
 (**  type polynome *)
 type poly = (int*float) list;;
 
-(** Retourne le coefficient de degrée i du polynome p *)
+(** 
+    [coef p i]
+    Retourne le coefficient de degrée i du polynome p
+    Complexité O(n) n étant la longueur de la liste p
+*)
 val coef :  poly -> int -> float
 
-(** Retourne la somme des polynomes p1 et p2 *)
+(** 
+    [p1 ^+ p2]
+    Retourne la somme des polynomes p1 et p2
+    Complexité O(n) n étant la longueur de la liste p1 ou p2
+*)
 val (^+) : poly -> poly -> poly
 
-(** Retourne le polynome p multiplié par le coef c *)
+(** 
+    [multCoeff p c]
+    Retourne le polynome p multiplié par le coef c
+    Complexité O(n) n étant la longueur de la liste p
+*)
 val multCoeff : poly -> float -> poly
 
-(** Retourne la soustraction du polynome p1 par le polynome p2 *)
+(** 
+    [p1 ^- p2]
+    Retourne la soustraction du polynome p1 par le polynome p2
+    Complexité O(n) n étant la longueur de la liste p1
+*)
 val (^-) : poly -> poly -> poly
 
-(** Retourne vrai si les polynomes p1 et p2 sont égaux *)
+(** 
+    [p1 ^= p2]
+    Retourne vrai si les polynomes p1 et p2 sont égaux
+    Complexité O(n) n étant la longueur de la liste p1
+*)
 val (^=) : poly -> poly -> bool
 
-(** Retourne le degree du polynome p *)
+(** 
+    [degre p]
+    Retourne le degree du polynome p
+    Complexité O(n) n étant la longueur de la liste p
+*)
 val degre : poly -> int
 
-(** Retourne le polynome p multiplié par X^i *)
+(** 
+    [multXn p i]
+    Retourne le polynome p multiplié par X^i
+    Complexité O(n) n étant la longueur de la liste p
+*)
 val multXn : poly -> int -> poly
 
-(** Retourne le polynome p scindé (p0, p1) tel que p = p0 + (x^i) p1 *)
+(** 
+    [cut p i]
+    Retourne le polynome p scindé (p0, p1) tel que p = p0 + (x^i) p1
+    Complexité O(n) n étant la longueur de la liste p
+*)
 val cut : poly -> int -> poly * poly
 
-(** Retourne la multiplication des polynomes p1 et p2 *)
-val (^*) : poly -> poly -> poly
-
-(** Retourne le renversé d'ordre k du polynome p *)
+(**
+    [renverse k p]
+    Retourne le renversé d'ordre k du polynome p
+    Complexité O(n) n étant la longueur de la liste p
+*)
 val renverse : int -> poly -> poly
 
-(** Retourne le reste de la division du polynome p par le monome de degre d *)
+(** 
+    [modulo p d]
+    Retourne le reste de la division du polynome p par le monome de degre d
+    Complexité O(n) n étant la longueur de la liste p
+*)
 val modulo : poly -> int -> poly
 
-(** Affiche le polynome sur la sortie standard *)
+(** 
+    [print_poly p]
+    Affiche le polynome sur la sortie standard
+    Complexité O(n) n étant la longueur de la liste p
+*)
 val print_poly : poly -> unit
 
-(** Retourne l'évaluation du polynome p avec la valeur x *)
+(** 
+    [horner p x]
+    Retourne l'évaluation du polynome p avec la valeur x
+    Complexité O(n) n étant la longueur de la liste p
+*)
 val horner : poly -> float -> float
 
-(** Retourne un polynome généré de degre maximal deg et de coef max maxcoef *)
+(** 
+    [random_poly deg coefmax]
+    Retourne un polynome généré de degre maximal deg et de coef max maxcoef
+    Complexité O(n) n étant le degré maximal possible du polynome
+*)
 val random_poly : int -> float -> poly
 
-(** Retourne les polynomes multiplié par la méthode naive *)
+(** 
+    [p1 ^* p2]
+    Retourne la multiplication des polynomes p1 et p2
+    TODO
+*)
+val (^*) : poly -> poly -> poly
+
+(** [mult_naive p1 p2] Retourne p1 * p2 par la méthode naive *)
 val mult_naive : poly -> poly -> poly
 
-(** Retourne les polynomes multiplié par la méthode toom cook3 *)
+(** [toom_cook p1 p2] Retourne p1 * p2 par la méthode toom cook 3 *)
 val toom_cook : poly -> poly -> float -> poly
 

@@ -2,7 +2,6 @@
 type monome = (int*float);;
 type poly = monome list;;
 
-(* Complexity O(n) n étant la longueur de la liste p*)
 let rec coef (p:poly) (i:int) : float = match p with
   | [] -> 0.
   | (d,_)::_ when d > i -> 0.
@@ -10,22 +9,19 @@ let rec coef (p:poly) (i:int) : float = match p with
   | _::lst -> coef lst i
 ;;
 
-(* Complexity O(n) n étant la longueur de la liste p1 ou p2 *)
-let sum (p1:poly) (p2:poly) : poly = 
-  let rec aux p1 p2 (r:poly) = match p1,p2 with
-    | [],[] -> (List.rev r)
-    | lst1, [] -> List.rev_append r lst1
-    | [], lst2 -> List.rev_append r lst2
-    | (d1,c1)::lst1, (d2,_)::_ when d1 < d2 -> aux lst1 p2 ((d1,c1)::r)
-    | (d1,c1)::lst1, (d2,c2)::lst2 when d1 = d2 -> aux lst1 lst2
-      (let p = c1+.c2 in if (p = 0.) then r else ((d1,p)::r))
-    | _, (d2,c2)::lst2 -> aux p1 lst2 ((d2,c2)::r)
-  in aux p1 p2 []
+let (^+) = 
+  let sum (p1:poly) (p2:poly) : poly = 
+    let rec aux p1 p2 (r:poly) = match p1,p2 with
+      | [],[] -> (List.rev r)
+      | lst1, [] -> List.rev_append r lst1
+      | [], lst2 -> List.rev_append r lst2
+      | (d1,c1)::lst1, (d2,_)::_ when d1 < d2 -> aux lst1 p2 ((d1,c1)::r)
+      | (d1,c1)::lst1, (d2,c2)::lst2 when d1 = d2 -> aux lst1 lst2
+        (let p = c1+.c2 in if (p = 0.) then r else ((d1,p)::r))
+      | _, (d2,c2)::lst2 -> aux p1 lst2 ((d2,c2)::r)
+    in aux p1 p2 []
 ;;
 
-let (^+) = sum;;
-
-(* Complexity O(n) n étant la longueur de la liste p*)
 let multCoeff (p:poly) (a:float) : poly = match a with
   | 0. -> []
   | _ -> List.map (fun (d,c) ->(d, c*.a)) p
@@ -33,72 +29,30 @@ let multCoeff (p:poly) (a:float) : poly = match a with
 
 let (^:) = multCoeff;;
 
-(* Complexity O(n) n étant la longueur de la liste p1*)
 let (^-) (p1:poly) (p2:poly) : poly = 
   p1 ^+ (p2 ^: (-1.))
 ;;
 
-(* Complexity O(1) n étant la longueur de la liste p1*)
 let (^=) (p1:poly) (p2:poly) : bool = 
   (p1 ^- p2) = []
 ;;
 
-(* Complexity O(n) n étant la longueur de la liste p *)
-let degre (p:poly) = match p with
+let degre (p:poly) : int = match p with
   | [] -> (-1)
   | _ -> List.rev p |> List.hd |> fst
 ;;
 
-(* Complexity O(n) n étant la longueur de la liste p *)
-let multXn (p:poly) (deg:int) =
+let multXn (p:poly) (deg:int) : poly =
   List.map (fun (d,c) -> (d+deg,c)) p
 ;;
 
 let (^^) = multXn;;
 
-(* Complexity O(n) n étant la longueur de la liste p *)
 let cut (p:poly) (deg:int) = 
   match List.partition (fun (d,_) -> d < deg) p with
   | p0,p1 -> p0 ,( p1 ^^ (-deg))
 ;;
 
-let rec (^*) (p1:poly) (p2:poly) : poly =  match p1, p2 with
-  |([], _) | (_, []) -> []
-  |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
-  |([(0, b)], p)  |(p, [(0, b)]) -> (p ^: b)
-  | _ -> 
-  let k = (max (degre p1) (degre p2)) in
-  let k = k + (k mod 2) in
-  let mk = (k/2) in
-  let p1_0,p1_1 = cut p1 mk in
-  let p2_0,p2_1 = cut p2 mk in
-  let c0 = p1_0 ^* p2_0 in
-  let c2 = p1_1 ^* p2_1 in
-  let u = (p1_0 ^+ p1_1) ^* (p2_0 ^+ p2_1) in
-  let c1 =  (u ^- c0) ^- c2 in
-  c0 ^+ (c1 ^^ mk) ^+ (c2 ^^ k)
-;;
-
-let get_litle_size_first (p1:poly) (p2:poly) =
-    let len_p1 = List.length p1 and
-        len_p2 = List.length p2 in
-    if (len_p1 > len_p2) then
-      p2,p1
-    else
-      p1,p2
-;;
-
-(* Complexity n² n étant la longueur de la liste du plus petit polynome *)
-let mult_naive (p1:poly) (p2:poly) = 
-  let p1, p2 = get_litle_size_first p1 p2 in
-  let rec aux p1 p2 = match p1 with
-  | [] -> []
-  | e1::[] -> multCoeff (multXn p2 (degre [e1])) (snd e1)
-  | e1::lst -> (aux [e1] p2) ^+ (aux lst p2)
-  in aux p1 p2
-;;
-
-(* Complexity O(n) n étant la longueur de la liste p*)
 let renverse (order:int) (p:poly) = 
   if (degre p) <= order then 
     List.rev_map (fun (d,c) -> (order-d,c)) p
@@ -106,28 +60,25 @@ let renverse (order:int) (p:poly) =
     failwith "(deg p) > order"
 ;;
 
-(* Complexity O(n) n étant la longueur de la liste p*)
-let modulo (p:poly) (deg:int) =
+let modulo (p:poly) (deg:int) : poly =
   List.map (fun (d,c) -> (d-deg,c)) p
 ;;
 
 (* Complexity O(1) *)
-let mono_to_string (m:monome) = match m with
+let mono_to_string (m:monome) : string = match m with
   | (d,c) -> (if (c >= 0.) then ("+") else "")^
   (string_of_int (int_of_float c)) ^ 
   (if (d = 0) then "" else "x^" ^ (string_of_int d) ^ " ")
 ;;
 
-(* Complexity O(n) n étant la longueur de la liste p*)
-let print_poly (p:poly) = 
+let print_poly (p:poly) : unit = 
   let rec aux (p:poly) (s:string) = match p with
   | [] -> (print_string (s^"\n"))
   | (d,c)::lst -> aux lst ((mono_to_string (d,c))^s)
   in aux p ""
 ;;
 
-(* Complexity O(n) n étant la longueur de la liste p*)
-let horner (p:poly) (x:float) = 
+let horner (p:poly) (x:float) : float = 
     let rec aux (acc:float) (pos:int) (p:poly) = match p with 
     | [] -> acc
     | (d,c)::lst when d = pos -> c +. (x *. (aux acc (pos+1) lst))
@@ -135,8 +86,7 @@ let horner (p:poly) (x:float) =
     in aux 0. 0 p
 ;;
 
-(* Complexity O(n) n étant le degré maximal possible du polynome *)
-let random_poly (deg:int) (maxcoef:float) = 
+let random_poly (deg:int) (maxcoef:float) : poly = 
   let rec aux (r:poly) (pos:int) = match pos with
   | _ when pos = deg -> (List.rev r)
   | _ -> 
@@ -149,8 +99,44 @@ let random_poly (deg:int) (maxcoef:float) =
   in aux [] 0
 ;;
 
-(* Complexity O(??) *)
-let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
+(** Retourne la plus petit poly en premier opti  complexité *)
+let get_litle_size_first (p1:poly) (p2:poly) : poly,poly =
+    let len_p1 = List.length p1 and
+        len_p2 = List.length p2 in
+    if (len_p1 > len_p2) then
+      p2,p1
+    else
+      p1,p2
+;;
+
+let mult_naive (p1:poly) (p2:poly) : poly = 
+  let p1, p2 = get_litle_size_first p1 p2 in
+  let rec aux p1 p2 = match p1 with
+  | [] -> []
+  | e1::[] -> multCoeff (multXn p2 (degre [e1])) (snd e1)
+  | e1::lst -> (aux [e1] p2) ^+ (aux lst p2)
+  in aux p1 p2
+;;
+
+let karatsuba = 
+  let rec (^*) (p1:poly) (p2:poly) : poly =  match p1, p2 with
+    |([], _) | (_, []) -> []
+    |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
+    |([(0, b)], p)  |(p, [(0, b)]) -> (p ^: b)
+    | _ -> 
+    let k = (max (degre p1) (degre p2)) in
+    let k = k + (k mod 2) in
+    let mk = (k/2) in
+    let p1_0,p1_1 = cut p1 mk in
+    let p2_0,p2_1 = cut p2 mk in
+    let c0 = p1_0 ^* p2_0 in
+    let c2 = p1_1 ^* p2_1 in
+    let u = (p1_0 ^+ p1_1) ^* (p2_0 ^+ p2_1) in
+    let c1 =  (u ^- c0) ^- c2 in
+    c0 ^+ (c1 ^^ mk) ^+ (c2 ^^ k)
+;;
+
+let rec toom_cook (p1:poly) (p2:poly) (alpha:float) : poly = match p1, p2 with
   |([], _) | (_, []) -> []
   |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
   |([(0, b)], p)  | (p, [(0, b)]) -> (p ^: b)

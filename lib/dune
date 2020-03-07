@@ -1,4 +1,4 @@
 (library
-  (name polynome)
+  (name polynome matrix)
   (public_name polynome)
 )
