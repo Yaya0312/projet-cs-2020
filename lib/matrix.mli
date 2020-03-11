@@ -43,6 +43,13 @@ val sum_row : matrix -> int -> 'a array -> unit
 val swap_row : matrix -> int -> int -> unit
 
 (**
+    [max_pos_array a ]
+    Retourne la position ou le maximum est present dans le tableau
+    Complexity O(n) TODO
+*)
+val max_pos_array : float array -> int
+
+(**
     [solve m row]
     Retourne l'ensemble des solutions en utilisant l'algorithme de gauss
     Complexity ??
