@@ -27,6 +27,7 @@ clean:
 
 doc:
 	dune build @doc
+	cp -r _build/default/_doc/_html ./docs
 	xdg-open _build/default/_doc/_html/index.html
 
 coverage : clean
