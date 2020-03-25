@@ -44,7 +44,7 @@ let test_multCoef_0 () = test_multCoef [] (multCoeff p1 0.);;
 let test_multCoef_2 () = test_multCoef [(0,4.);(1,-2.);(3,10.)] (multCoeff p1 2.);;
 let test_multCoef_neg2 () = test_multCoef [(0,-4.);(1,2.);(3,-10.)] (multCoeff p1 (-2.));;
 
-let multCoef_test =
+let multCoef_tests =
   [
     ("multCoef with 0", `Quick, test_multCoef_0);
     ("multCoef with 2", `Quick, test_multCoef_2);
@@ -94,30 +94,77 @@ let cut_tests =
     ("cut p1 with 5", `Quick, test_cut_p1_5);
   ];;
 
-(*** mult *********************************************************************)
-
-let test_mult = Alcotest.check alcotestPoly "mult";;
+(*** mult result **************************************************************)
 let r1 =[(0, 2.); (1, (-3.)); (2, 3.); (3, 6.); (4, (-2.)); (5, 3.); (6, 5.); (7, 10.)];;
 let r2 =[(0, 4.); (1, -4.); (2, 1.); (3, 20.); (4, -10.); (6, 25.)];;
 let r3 =[(0, 1.); (1, -2.); (2, 3.); (4, 3.); (5, -2.); (6, 5.); (7, 4.); (8, 4.)];;
-let test_mult_p1_p2 () = test_mult r1 (p1 ^* p2);;
-let test_mult_p1_p1 () = test_mult r2 (p1 ^* p1);;
-let test_mult_p2_p2 () = test_mult r3 (p2 ^* p2);;
-let test_mult_p1_empty () = test_mult [] (p1 ^* []);;
-let test_mult_empty_p1 () = test_mult [] ([] ^* p1);;
-let test_mult_p2_empty () = test_mult [] (p2 ^* []);;
-let test_mult_empty_p2 () = test_mult [] ([] ^* p2);;
 
-let mult_tests =
+(*** mult karatsuba ***********************************************************)
+
+let test_mult_k = Alcotest.check alcotestPoly "multiplication karatsuba";;
+let test_mult_k_p1_p2 () = test_mult_k r1 (karatsuba p1 p2);;
+let test_mult_k_p1_p1 () = test_mult_k r2 (karatsuba p1 p1);;
+let test_mult_k_p2_p2 () = test_mult_k r3 (karatsuba p2 p2);;
+let test_mult_k_p1_empty () = test_mult_k [] (karatsuba p1 []);;
+let test_mult_k_empty_p1 () = test_mult_k [] (karatsuba [] p1);;
+let test_mult_k_p2_empty () = test_mult_k [] (karatsuba p2 []);;
+let test_mult_k_empty_p2 () = test_mult_k [] (karatsuba [] p2);;
+
+let mult_karatsuba_tests =
   [
-    (" p1 * p2", `Quick, test_mult_p1_p2);
-    (" p1 * p1", `Quick, test_mult_p1_p1);
-    (" p2 * p2", `Quick, test_mult_p2_p2);
-    (" p1 * []", `Quick, test_mult_p1_empty);
-    (" [] * p1", `Quick, test_mult_empty_p1);
-    (" p2 * []", `Quick, test_mult_p2_empty);
-    (" [] * p2", `Quick, test_mult_empty_p2);
+    (" p1 * p2", `Quick, test_mult_k_p1_p2);
+    (" p1 * p1", `Quick, test_mult_k_p1_p1);
+    (" p2 * p2", `Quick, test_mult_k_p2_p2);
+    (" p1 * []", `Quick, test_mult_k_p1_empty);
+    (" [] * p1", `Quick, test_mult_k_empty_p1);
+    (" p2 * []", `Quick, test_mult_k_p2_empty);
+    (" [] * p2", `Quick, test_mult_k_empty_p2);
   ];;
+
+(*** mult naive ***********************************************************)
+
+let test_mult_n = Alcotest.check alcotestPoly "multiplication naive";;
+let test_mult_n_p1_p2 () = test_mult_n r1 (mult_naive p1 p2);;
+let test_mult_n_p1_p1 () = test_mult_n r2 (mult_naive p1 p1);;
+let test_mult_n_p2_p2 () = test_mult_n r3 (mult_naive p2 p2);;
+let test_mult_n_p1_empty () = test_mult_n [] (mult_naive p1 []);;
+let test_mult_n_empty_p1 () = test_mult_n [] (mult_naive [] p1);;
+let test_mult_n_p2_empty () = test_mult_n [] (mult_naive p2 []);;
+let test_mult_n_empty_p2 () = test_mult_n [] (mult_naive [] p2);;
+
+let mult_naive_tests =
+  [
+    (" p1 * p2", `Quick, test_mult_n_p1_p2);
+    (" p1 * p1", `Quick, test_mult_n_p1_p1);
+    (" p2 * p2", `Quick, test_mult_n_p2_p2);
+    (" p1 * []", `Quick, test_mult_n_p1_empty);
+    (" [] * p1", `Quick, test_mult_n_empty_p1);
+    (" p2 * []", `Quick, test_mult_n_p2_empty);
+    (" [] * p2", `Quick, test_mult_n_empty_p2);
+  ];;
+
+(*** mult toom_cook3 ***********************************************************)
+
+let test_mult_t3 = Alcotest.check alcotestPoly "multiplication toom_cook3";;
+let test_mult_t3_p1_p2 () = test_mult_t3 r1 (toom_cook3 p1 p2);;
+let test_mult_t3_p1_p1 () = test_mult_t3 r2 (toom_cook3 p1 p1);;
+let test_mult_t3_p2_p2 () = test_mult_t3 r3 (toom_cook3 p2 p2);;
+let test_mult_t3_p1_empty () = test_mult_t3 [] (toom_cook3 p1 []);;
+let test_mult_t3_empty_p1 () = test_mult_t3 [] (toom_cook3 [] p1);;
+let test_mult_t3_p2_empty () = test_mult_t3 [] (toom_cook3 p2 []);;
+let test_mult_t3_empty_p2 () = test_mult_t3 [] (toom_cook3 [] p2);;
+
+let mult_toom_cook3_tests =
+  [
+    (" p1 * p2", `Quick, test_mult_t3_p1_p2);
+    (" p1 * p1", `Quick, test_mult_t3_p1_p1);
+    (" p2 * p2", `Quick, test_mult_t3_p2_p2);
+    (" p1 * []", `Quick, test_mult_t3_p1_empty);
+    (" [] * p1", `Quick, test_mult_t3_empty_p1);
+    (" p2 * []", `Quick, test_mult_t3_p2_empty);
+    (" [] * p2", `Quick, test_mult_t3_empty_p2);
+  ];;
+
 
 (*** renverse *****************************************************************)
 let test_renverse = Alcotest.check alcotestPoly "renverse";;
@@ -126,18 +173,18 @@ let test_renverse_2_p1 () = test_renverse [(-1,5.);(1,-1.);(2,2.)] (renverse 2 p
 
 let renverse_tests = 
   [
-     (" renv p1 with 2", `Quick, test_renverse_2_p1);
+    (" renv p1 with 2", `Quick, test_renverse_2_p1);
   ];;
 
 (*** modulo *******************************************************************)
 (* let test_modulo = Alcotest.check alcotestPoly "modulo";;
 
-let test_modulo_2_p1 () = test_modulo [(-1,5.);(1,-1.);(2,2.)] (modulo 2 p1);;
+   let test_modulo_2_p1 () = test_modulo [(-1,5.);(1,-1.);(2,2.)] (modulo 2 p1);;
 
-let modulo_modulo = 
-  [
+   let modulo_modulo = 
+   [
      (" renv p1 with 2", `Quick, test_modulo_2_p1);
-  ];; *)
+   ];; *)
 
 
 (*** horner *******************************************************************)
@@ -148,6 +195,6 @@ let test_horner_p1_2 () = test_horner 40. (horner p1 2.) ;;
 
 let horner_tests = 
   [
-     (" horner p1 with 0.", `Quick, test_horner_p1_0);
-     (" horner p1 with 2.", `Quick, test_horner_p1_2);
+    (" horner p1 with 0.", `Quick, test_horner_p1_0);
+    (" horner p1 with 2.", `Quick, test_horner_p1_2);
   ];;

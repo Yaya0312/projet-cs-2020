@@ -6,7 +6,7 @@ let rec coef (p:poly) (i:int) : float = match p with
   | [] -> 0.
   | (d,_)::_ when d > i -> 0.
   | (d,c)::_ when i = d -> c
-  | _::lst -> coef lst i
+  | _::lst -> (coef [@tailcall]) lst i
 ;;
 
 let (^+) (p1:poly) (p2:poly) : poly = 
@@ -63,7 +63,6 @@ let modulo (p:poly) (deg:int) : poly =
   List.map (fun (d,c) -> (d-deg,c)) p
 ;;
 
-(* Complexity O(1) *)
 let mono_to_string (m:monome) : string = match m with
   | (d,c) -> (if (c >= 0.) then ("+") else "")^
              (string_of_int (int_of_float c)) ^ 
@@ -92,29 +91,16 @@ let random_poly (deg:int) (maxcoef:float) : poly =
         let has_coef = Random.bool () in
         let coef = Random.float maxcoef in
         if (has_coef) then 
-          aux ((pos, coef)::r) (pos +1)
+          aux ((pos, coef)::r) (pos + 1)
         else 
-          aux r (pos+1)
+          aux r (pos + 1)
   in aux [] 0
 ;;
 
-(** Retourne la plus petit poly en premier opti  complexité *)
-let get_litle_size_first (p1:poly) (p2:poly) =
-  let len_p1 = List.length p1 and
-  len_p2 = List.length p2 in
-  if (len_p1 > len_p2) then
-    p2,p1
-  else
-    p1,p2
-;;
-
-let mult_naive (p1:poly) (p2:poly) : poly = 
-  let p1, p2 = get_litle_size_first p1 p2 in
-  let rec aux p1 p2 = match p1 with
-    | [] -> []
-    | e1::[] -> multCoeff (multXn p2 (degre [e1])) (snd e1)
-    | e1::lst -> (aux [e1] p2) ^+ (aux lst p2)
-  in aux p1 p2
+let rec mult_naive (p1:poly) (p2:poly) : poly = match p1 with
+  | [] -> []
+  | (d,c)::[] -> multXn (multCoeff p2 c) d (* TODO à optimiser *)
+  | e1::lst -> (mult_naive [e1] p2) ^+ (mult_naive lst p2)
 ;;
 
 let karatsuba = 
@@ -136,7 +122,7 @@ let karatsuba =
   in (^*) 
 ;;
 
-let rec toom_cook (p1:poly) (p2:poly) (alpha:float) : poly = match p1, p2 with
+let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
   |([], _) | (_, []) -> []
   |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
   |([(0, b)], p)  | (p, [(0, b)]) -> (p ^: b)
@@ -155,10 +141,11 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) : poly = match p1, p2 with
       let r3 = (toom_cook (p1_0 ^+ (p1_1 ^: alpha) ^+ (p1_2 ^: (alpha*.alpha))) (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha*.alpha))) alpha) in
       let r4 = (toom_cook p1_2 p2_2 alpha) in
       let res0 = r0 in
-      let a = 1./.alpha in 
-      let res1 = ((r0 ^: (-1.)) ^: a) ^+ ((r1 ^: (0.5)) ^: (alpha /. (alpha -. 1.))) ^+ (r4 ^: alpha) ^+ (((r2 ^: (1./.2.)) ^: (alpha /. (alpha +. 1.))) ^: (-1.)) ^+ ((r3 ^:  (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) ^: (-1.)) in
-      let res2 = (r0 ^: (-1.)) ^+ (r4 ^: (-1.)) ^+ ((r1 ^+ r2) ^: (0.5)) in
-      let res3 = (r0 ^: a) ^+ ((r1 ^: 1./.(2. *. (alpha -. 1.))) ^: (-1.)) ^+ ((r4 ^: alpha) ^: (-1.)) ^+ ((r2 ^: 1./.(2. *. (alpha +. 1.))) ^: (-1.)) ^+ (r3 ^: (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
+      let res1 = ((r0 ^: (-1.)) ^: (1./.alpha)) ^+ ((r1 ^: (1./.2.)) ^: (alpha /. (alpha -. 1.))) ^+ (r4 ^: alpha) ^+ (((r2 ^: (1./.2.)) ^: (alpha /. (alpha +. 1.))) ^: (-1.)) ^+ ((r3 ^:  (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) ^: (-1.)) in
+      let res2 = (r0 ^: (-1.)) ^+ (r4 ^: (-1.)) ^+ ((r1 ^+ r2) ^: (1./.2.)) in
+      let res3 = (r0 ^: (1./.alpha)) ^+ ((r1 ^: 1./.(2. *. (alpha -. 1.))) ^: (-1.)) ^+ ((r4 ^: alpha) ^: (-1.)) ^+ ((r2 ^: 1./.(2. *. (alpha +. 1.))) ^: (-1.)) ^+ (r3 ^: (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
       let res4 = r4 in
       res0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2*n)) ^+ (res3 ^^ (3*n)) ^+ (res4 ^^ (4*n))
 ;;
+
+let toom_cook3 p1 p2 = toom_cook p1 p2 (1.);;

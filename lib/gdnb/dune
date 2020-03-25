@@ -1,0 +1,4 @@
+(library
+  (name gdnb)
+  (public_name gdnb)
+)

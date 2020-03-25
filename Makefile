@@ -25,7 +25,7 @@ utop:
 
 doc:
 	dune build @doc
-	firefox _build/default/_doc/_html/index.html
+	xdg-open _build/default/_doc/_html/index.html
 
 coverage : clean
 	BISECT_ENABLE=yes dune build

@@ -3,8 +3,6 @@
   (libraries alcotest polynome)
 )
 
-(alias
-  (name runtest)
-  (deps tests.exe)
-  (action (run %{deps} -q --color=always))
-  )
+(rule
+ (alias  runtest)
+ (action (run ./tests.exe --color=always)))

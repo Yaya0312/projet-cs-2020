@@ -7,6 +7,7 @@ type poly = (int*float) list;;
     [coef p i]
     Retourne le coefficient de degrée i du polynome p
     Complexité O(n) n étant la longueur de la liste p
+    recursive terminal && fonction pure
 *)
 val coef :  poly -> int -> float
 
@@ -14,6 +15,7 @@ val coef :  poly -> int -> float
     [p1 ^+ p2]
     Retourne la somme des polynomes p1 et p2
     Complexité O(n) n étant la longueur de la liste p1 ou p2
+    recursive terminal && fonction pure
 *)
 val (^+) : poly -> poly -> poly
 
@@ -95,15 +97,20 @@ val horner : poly -> float -> float
 val random_poly : int -> float -> poly
 
 (** 
-    [p1 ^* p2]
-    Retourne la multiplication des polynomes p1 et p2
+    [karatsuba p1 p2]
+    Retourne p1 * p2 par la méthode de karatsuba (Toom Cook 2)
     TODO
 *)
-val (^*) : poly -> poly -> poly
+val karatsuba : poly -> poly -> poly
 
-(** [mult_naive p1 p2] Retourne p1 * p2 par la méthode naive *)
+(** 
+    [mult_naive p1 p2]
+    Retourne p1 * p2 par la méthode naive
+*)
 val mult_naive : poly -> poly -> poly
 
-(** [toom_cook p1 p2] Retourne p1 * p2 par la méthode toom cook 3 *)
-val toom_cook : poly -> poly -> float -> poly
-
+(** 
+    [toom_cook p1 p2]
+    Retourne p1 * p2 par la méthode Toom cook 3
+*)
+val toom_cook3 : poly -> poly -> poly
