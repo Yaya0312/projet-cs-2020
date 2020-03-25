@@ -2,6 +2,11 @@
 
 default: build
 
+start:
+	opam install dune
+	dune build
+	opam install -y --deps-only .
+
 build:
 	dune build
 
