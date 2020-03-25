@@ -2,7 +2,8 @@
 (generate_opam_files true)
 
 (name projet)
-(authors "Yannis Yahi")
+(authors "Pop")
+(license MIT)
 
 (package
  (name polynome)
