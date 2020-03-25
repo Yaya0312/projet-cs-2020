@@ -6,9 +6,8 @@ license: "MIT"
 
 build: [
   ["dune" "subst"] {pinned}
-  ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "build" "-p" name "-j" jobs] {with-test}
   ["dune" "runtest" "-p" name "-j" jobs] {with-test}
-  ["bisect_ppx.git" "git+https://github.com/aantron/bisect_ppx.git"]
 ]
 
 depends: [

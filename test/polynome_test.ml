@@ -188,7 +188,7 @@ let renverse_tests =
 
 
 (*** horner *******************************************************************)
-let test_horner = Alcotest.check  (Alcotest.float 0.00001) "horner";;
+let test_horner = Alcotest.check  (Alcotest.float 0.1) "horner";;
 
 let test_horner_p1_0 () = test_horner 2. (horner p1 0.) ;;
 let test_horner_p1_2 () = test_horner 40. (horner p1 2.) ;;

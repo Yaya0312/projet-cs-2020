@@ -20,15 +20,11 @@ uninstall:
 clean:
 	dune clean
 
-utop:
-	dune utop lib
-
 doc:
 	dune build @doc
 	xdg-open _build/default/_doc/_html/index.html
 
 coverage : clean
-	BISECT_ENABLE=yes dune build
-	dune runtest --no-buffer -j 1
-	bisect-ppx-report summary
-	@echo See _coverage/index.html
+	BISECT_ENABLE=yes dune exec ./test/tests.exe
+	dune exec bisect-ppx-report -- html
+	xdg-open _coverage/index.html

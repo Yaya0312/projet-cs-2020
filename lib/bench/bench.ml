@@ -47,14 +47,14 @@ let pick a =
 ;;
 
 (** Execute la fonction iter fois et retourne la moyenne *)
-let average (iter:int) f : float =
-  let rec aux acc pos = 
+(* let average (iter:int) f : float =
+   let rec aux acc pos = 
     if (pos = 0) then
       acc /. (float_of_int iter)
     else 
       aux (acc +. f) (pos + 1)
-  in aux 0. iter
-;;
+   in aux 0. iter
+   ;; *)
 
 (** 
    Retourne le temps que la fonction à mis pour s'executer
@@ -79,7 +79,7 @@ let calc (deg:int) : (float array) =
   let p1,p2 = pick pList in 
   (* let tk = time_fun (fun _ -> karatsuba  p1 p2) () in
      let tn = time_fun (fun _ -> mult_naive p1 p2) () in *)
-  let tc = time_fun (fun _ -> Polynome.toom_cook p1 p2) () in
+  let tc = time_fun (fun _ -> Polynome.toom_cook3 p1 p2) () in
   [|tc|]
 ;;
 
@@ -88,7 +88,6 @@ let a2 = make_array 11 10000;; (* Ok *)
 shuffle a2;; (* Ok *)
 let a2 = Array.sub a2 0 ((1000 - (Array.length a1)));;
 let a1 = Array.append a1 a2;;
-let a2 = [];;
 let ht = Hashtbl.create 1000;;
 Array.iter (fun a -> Hashtbl.add ht a (calc a)) a1;;
 export_latex ht "mult.dat";;

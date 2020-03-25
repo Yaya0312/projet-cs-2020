@@ -5,7 +5,7 @@ Copier le depot git
 Dans votre dépot local faite une branche et mettez vous dessus:
 **git checkout -b votrePrenom**
 
-faite vos moddif (add et commit) ensuite pousser cette branche sur git
+faite vos modif (add et commit) ensuite pousser cette branche sur git
 **git push set...**
 
 sur l'interface de git un encadré jaune apparait cliqué dessus pour demander une fusion.

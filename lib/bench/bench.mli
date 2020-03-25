@@ -12,7 +12,7 @@ val shuffle : 'a array -> unit
     Complexité O(n) -  Parcours le tableau de longueur n
 *)
 
-val make_array : int -> int -> unit
+val make_array : int -> int -> int array
 (** 
     Génére un tableau de min à max (longueur min - max + 1)
     Complexity O(n) - Initialise le tableau de longueur n
