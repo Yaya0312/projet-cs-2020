@@ -12,7 +12,7 @@
  (description "\
  Permet d'effectuer les opérations usuelles sur les polynomes")
  (depends
-  (ocaml (>= 4.08.0))
+  (ocaml (>= 4.05.0))
   (alcotest (>=  1.0.1))
   (bisect_ppx ( >= 2.0.0))
   (odoc ( >= 1.5.0))
