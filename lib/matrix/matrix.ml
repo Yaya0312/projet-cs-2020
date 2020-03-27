@@ -34,7 +34,7 @@ let max_pos_array (b:float array) (from:int) : int = (* TODO from en option *)
     if (pos = Array.length a) then
       p_max
 
-    else if (e_max < Float.abs(Array.get a pos)) then
+    else if (e_max < Base.Float.abs(Array.get a pos)) then
       aux a (Array.get a pos) pos (pos + 1)
     else 
       aux a e_max p_max (pos + 1)

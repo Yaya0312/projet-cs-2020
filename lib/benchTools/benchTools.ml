@@ -21,13 +21,14 @@ let make_array (min:int) (max:int) : int array =
 (** END TOOLS *)
 
 let create_array_polynome (num:int) (deg:int) = 
-  Array.init (num + 1) (fun _ -> random_poly deg max_float);;
+  Array.init (num + 1) (fun _ -> random_poly deg Base.Float.max_value)
 ;;
 
 (** 
    Pioche deux element dans la liste
    Complexité O(1)
 *)
+
 let pick a =
   let random1 = Random.int (Array.length a) and
   random2 = Random.int (Array.length a) in

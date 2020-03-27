@@ -11,7 +11,7 @@ let () = Jbuild_plugin.V1.send @@ {|
 (library
   (name benchTools)
   (public_name benchTools)
-  (libraries polynome unix)
+  (libraries polynome unix base)
   |} ^ preprocess ^ {|)
 
 |}
