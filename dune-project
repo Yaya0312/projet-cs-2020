@@ -1,4 +1,4 @@
-(lang dune 2.0.1)
+(lang dune 2.0)
 (generate_opam_files true)
 
 (name projet)
