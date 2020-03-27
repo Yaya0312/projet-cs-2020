@@ -2,9 +2,7 @@
 
 default: build
 
-start:
-	opam install dune
-	dune build
+deps:
 	opam install -y --deps-only .
 
 build:
@@ -15,12 +13,6 @@ build-prod:
 
 test:
 	dune runtest -f
-
-install:
-	dune install
-
-uninstall:
-	dune uninstall
 
 clean:
 	dune clean
