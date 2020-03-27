@@ -99,7 +99,7 @@ let random_poly (deg:int) (maxcoef:float) : poly =
 
 let rec mult_naive (p1:poly) (p2:poly) : poly = match p1 with
   | [] -> []
-  | (d,c)::[] -> multXn (multCoeff p2 c) d (* TODO à optimiser *)
+  | (d,c)::[] -> List.map (fun (a,b) -> (a+d,b*.c) ) p2
   | e1::lst -> (mult_naive [e1] p2) ^+ (mult_naive lst p2)
 ;;
 
