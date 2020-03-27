@@ -15,9 +15,13 @@ let (^+) (p1:poly) (p2:poly) : poly =
     | lst1, [] -> List.rev_append r lst1
     | [], lst2 -> List.rev_append r lst2
     | (d1,c1)::lst1, (d2,_)::_ when d1 < d2 -> aux lst1 p2 ((d1,c1)::r)
-    | (d1,c1)::lst1, (d2,c2)::lst2 when d1 = d2 -> aux lst1 lst2
-                                                     (let p = c1+.c2 in if (p = 0.) then r else ((d1,p)::r))
-    | _, (d2,c2)::lst2 -> aux p1 lst2 ((d2,c2)::r)
+    | (d1,c1)::lst1, (d2,c2)::lst2 when d1 = d2 -> 
+        (aux [@tailcall]) lst1 lst2 (
+          begin 
+            let p = c1+.c2 in
+            if (p = 0.) then r else ((d1,p)::r)
+          end)
+    | _, (d2,c2)::lst2 -> (aux [@tailcall]) p1 lst2 ((d2,c2)::r)
   in aux p1 p2 []
 ;;
 
