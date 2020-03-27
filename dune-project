@@ -10,7 +10,6 @@
 (bug_reports https://github.com/Yaya0312/projet-cs-2020/issues)
 (documentation https://yaya0312.github.io/projet-cs-2020/)
 
-
 (package
  (name polynome)
  (synopsis "Permet de manipuler des polynomes ")
