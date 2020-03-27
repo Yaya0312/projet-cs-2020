@@ -17,9 +17,9 @@
  Permet d'effectuer les opérations usuelles sur les polynomes")
  (depends
   (ocaml (>= 4.05.0))
-  (alcotest (>=  1.0.1))
-  (bisect_ppx ( >= 2.0.0))
-  (odoc ( >= 1.5.0))
+  (alcotest (and :with-test (>=  1.0.1)))
+  (bisect_ppx (and :with-test ( >= 2.0.0)))
+  (odoc (and :dev ( >= 1.5.0)))
   )
 )
 
@@ -28,6 +28,12 @@
  (synopsis "Permet de manipuler des matrices ")
  (description "\
  Permet d'effectuer quelques opérations sur les matrices")
+  (depends
+  (ocaml (>= 4.05.0))
+  (alcotest (and :with-test (>=  1.0.1)))
+  (bisect_ppx (and :with-test ( >= 2.0.0)))
+  (odoc (and :dev ( >= 1.5.0)))
+  )
 )
 
 (package
@@ -35,6 +41,12 @@
  (synopsis "Permet d'obtenir des retours sur les fonctions ")
  (description "\
  Analyse les performances des fonctions")
+  (depends
+  (ocaml (>= 4.05.0))
+  (alcotest (and :with-test (>=  1.0.1)))
+  (bisect_ppx (and :with-test ( >= 2.0.0)))
+  (odoc (and :dev ( >= 1.5.0)))
+  )
 )
 
 (package
@@ -42,4 +54,10 @@
  (synopsis "Permet de manipuler des grands nombres ")
  (description "\
  Permet d'effectuer les opérations usuelles sur les polynomes")
+  (depends
+  (ocaml (>= 4.05.0))
+  (alcotest (and :with-test (>=  1.0.1)))
+  (bisect_ppx (and :with-test ( >= 2.0.0)))
+  (odoc (and :dev ( >= 1.5.0)))
+  )
 )
