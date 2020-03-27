@@ -3,13 +3,15 @@
 let preprocess =
   match Sys.getenv "BISECT_ENABLE" with
   | "yes" -> "(preprocess (pps bisect_ppx))"
-  | _ | exception _ -> ""
+  | _ -> ""
+  | exception Not_found -> ""
 
 let () = Jbuild_plugin.V1.send @@ {|
 
 (library
   (name matrix)
   (public_name matrix)
+  (libraries base)
   |} ^ preprocess ^ {|)
 
 |}
