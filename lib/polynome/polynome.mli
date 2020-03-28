@@ -113,4 +113,4 @@ val mult_naive : poly -> poly -> poly
     [toom_cook p1 p2]
     Retourne p1 * p2 par la méthode Toom cook 3
 *)
-val toom_cook3 : poly -> poly -> poly
+val toom_cook3 : poly -> poly -> float -> poly
