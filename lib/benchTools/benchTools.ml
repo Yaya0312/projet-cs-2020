@@ -8,8 +8,8 @@ let swap (a:'a array) (i:int) (j:int) : unit =
   a.(j) <- t
 ;;
 
-let shuffle (a:'a array) : unit =
-  Array.iteri (fun i _ -> swap a i (Random.int (i + 1))) a
+let shuffle (a:'a array) ?(start = 0) ?(len = Array.length a) () : unit =
+  Array.iteri (fun i _ -> swap a i (Random.int (i + 1))) (Array.sub a start len)
 ;;
 
 let make_array (min:int) (max:int) : int array =

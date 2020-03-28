@@ -10,7 +10,7 @@ val swap : 'a array -> int -> int -> unit
     Mélange le tableau
     Complexité O(n) -  Parcours le tableau de longueur n
 *)
-val shuffle : 'a array -> unit
+val shuffle : 'a array -> ?start:int -> ?len:int -> unit -> unit
 
 (** 
     Génére un tableau de min à max (longueur min - max + 1)
