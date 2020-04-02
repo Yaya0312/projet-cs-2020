@@ -10,7 +10,7 @@ let test_suites: unit Alcotest.test list = [
   "mult_t3", Polynome_test.mult_toom_cook3_tests;
   (* "renverse", Polynome_test.renverse_tests; *)
   "horner", Polynome_test.horner_tests;
-  "get_col", Matrix_test.get_row_tests
+  (* "get_col", Matrix_test.get_row_tests *)
 ];;
 
 let _ = Alcotest.run "Test" test_suites

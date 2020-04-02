@@ -41,8 +41,6 @@ let max_pos_array (b:float array) (from:int) : int = (* TODO from en option *)
   in aux b b.(from) from from
 ;;
 
-
-
 let solve (m:float matrix) : float array =
   let descente col_pos row_pos = 
     let max_pos_el = max_pos_array (get_col m col_pos) row_pos in
