@@ -5,17 +5,16 @@
 val swap : 'a array -> int -> int -> unit
 
 (** 
-    [shuffle a start ] Mélange le tableau a \n
-    Complexité O(n) -  Parcours le tableau de longueur n
+    [shuffle a start len] Mélange len éléments du tableau a à partir de start \n
+    Complexité O(len-start)
 *)
 val shuffle : 'a array -> ?start:int -> ?len:int -> unit -> unit
 
 (** 
-    Génére un tableau de min à max (longueur min - max + 1)
+    [make_array min max] Génére un tableau de min à max (longueur min - max + 1)
     Complexity O(n) - Initialise le tableau de longueur n
 *)
 val make_array : int -> int -> int array
-
 
 val calc: int -> float array
 
