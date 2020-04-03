@@ -94,6 +94,7 @@ let random_poly (deg:int) ?(maxcoef=1073741823) (): poly =
       r
     else 
       let coef = float_of_int (Random.int (maxcoef)) in
+      let coef = if coef = 0. then 1. else coef in
       aux ((pos, coef)::r) (pos - 1)
   in aux [] deg
 ;;
