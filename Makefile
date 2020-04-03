@@ -1,6 +1,6 @@
 .PHONY: default build-prod build install uninstall test clean utop coverage doc
 
-default: build
+default: build-prod
 
 deps:
 	opam install -y --deps-only .
