@@ -23,9 +23,9 @@ let make_array (min:int) (max:int) : int array =
    [time_fun func arg] retourne le temps que la fonction fun à mis pour 
    s'executer
 *)
-let time_fun func =
+let time_fun func arg=
   let start_time = Sys.time () in
-  ignore (func);
+  ignore(func arg);
   Sys.time () -. start_time
 ;;
 
@@ -54,8 +54,8 @@ let export_latex ht (file:string) : unit =
 let calc (deg:int) : (float array) =
   let p1,p2 = (Array.init 11 (fun _ -> random_poly deg ()) ) |> pick_double in 
   [|
-    time_fun (fun _ -> mult_naive p1 p2);
-    time_fun (fun _ -> karatsuba  p1 p2);
-    time_fun (fun _ -> toom_cook3 p1 p2);
+    time_fun (fun _ -> mult_naive p1 p2) ();
+    time_fun (fun _ -> karatsuba  p1 p2) ();
+    time_fun (fun _ -> toom_cook3 p1 p2) ();
   |]
 ;;
