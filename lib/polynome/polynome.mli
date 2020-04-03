@@ -4,17 +4,15 @@
 type poly = (int*float) list;;
 
 (** 
-    [coef p i]
-    Retourne le coefficient de degrée i du polynome p
-    Complexité O(n) n étant la longueur de la liste p
+    [coef p i] retourne le coefficient de degrée i du polynome p \n
+    Complexité O(n) n étant la longueur de la liste p \n
     recursive terminal && fonction pure
 *)
 val coef :  poly -> int -> float
 
 (** 
-    [p1 ^+ p2]
-    Retourne la somme des polynomes p1 et p2
-    Complexité O(n) n étant la longueur de la liste p1 ou p2
+    [p1 ^+ p2] retourne la somme des polynomes p1 et p2 \n
+    Complexité O(n) n étant la longueur de la liste p1 ou p2 \n
     recursive terminal && fonction pure
 *)
 val (^+) : poly -> poly -> poly
