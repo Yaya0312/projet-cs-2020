@@ -94,7 +94,7 @@ val horner : poly -> float -> float
     Retourne un polynome généré de degre maximal deg et de coef max maxcoef
     Complexité O(n) n étant le degré maximal possible du polynome
 *)
-val random_poly : int -> float -> poly
+val random_poly : int -> ?maxcoef:int -> unit -> poly
 
 (** 
     [karatsuba p1 p2]

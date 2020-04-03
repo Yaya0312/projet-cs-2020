@@ -88,17 +88,14 @@ let horner (p:poly) (x:float) : float =
   in aux 0. 0 p
 ;;
 
-let random_poly (deg:int) (maxcoef:float) : poly = 
-  let rec aux (r:poly) (pos:int) = match pos with
-    | _ when pos = deg -> (List.rev r)
-    | _ -> 
-        let has_coef = Random.bool () in
-        let coef = Random.float maxcoef in
-        if (has_coef) then 
-          aux ((pos, coef)::r) (pos + 1)
-        else 
-          aux r (pos + 1)
-  in aux [] 0
+let random_poly (deg:int) ?(maxcoef=1073741823) (): poly = 
+  let rec aux (r:poly) (pos:int) = 
+    if (pos = 0) then 
+      r
+    else 
+      let coef = float_of_int (Random.int (maxcoef)) in
+      aux ((pos, coef)::r) (pos - 1)
+  in aux [] deg
 ;;
 
 let rec mult_naive (p1:poly) (p2:poly) : poly = match p1 with
