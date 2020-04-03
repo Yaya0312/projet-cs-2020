@@ -101,7 +101,7 @@ let random_poly (deg:int) ?(maxcoef=1073741823) (): poly =
 
 let rec mult_naive (p1:poly) (p2:poly) : poly = match p1 with
   | [] -> []
-  | (d,c)::[] -> List.map (fun (a,b) -> (a+d,b*.c) ) p2
+  | (d,c)::[] -> List.map (fun (a,b) -> (a + d, b *. c) ) p2
   | e1::lst -> (mult_naive [e1] p2) ^+ (mult_naive lst p2)
 ;;
 
@@ -137,7 +137,7 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
       let p2_0, q_temp = cut p2 mk in
       let p2_1, p2_2 = cut q_temp mk in
       let n = degre p1_0 + 1 in
-      let r0 = toom_cook p1_0 p2_0 alpha in 
+      let r0 = toom_cook p1_0 p2_0 alpha in
       let r1 = (toom_cook (p1_0 ^+ p1_1 ^+ p1_2) (p2_0 ^+ p2_1 ^+ p2_2) alpha) in
       let r2 = (toom_cook (p1_0 ^+ p1_2 ^+ (p1_1 ^: (-1.))) (p2_0 ^+ p2_2 ^+ (p2_1 ^: (-1.))) alpha) in
       let r3 = (toom_cook (p1_0 ^+ (p1_1 ^: alpha) ^+ (p1_2 ^: (alpha*.alpha))) (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha*.alpha))) alpha) in
