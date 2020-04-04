@@ -18,10 +18,10 @@ let (^+) (p1:poly) (p2:poly) : poly =
     | (d1,c1)::lst1, (d2,c2)::lst2 when d1 = d2 -> 
         (aux [@tailcall]) lst1 lst2 (
           begin 
-            let p = c1+.c2 in
+            let p = c1 +. c2 in
             if (p = 0.) then r else ((d1,p)::r)
           end)
-    | _, (d2,c2)::lst2 -> (aux [@tailcall]) p1 lst2 ((d2,c2)::r)
+    | _, (d2,c2)::lst2 -> (aux [@tailcall]) p1 lst2 ((d2, c2)::r)
   in aux p1 p2 []
 ;;
 
@@ -40,13 +40,14 @@ let (^=) (p1:poly) (p2:poly) : bool =
   (p1 ^- p2) = []
 ;;
 
+(* A OPTIMISER , changer struct poly ?*)
 let degre (p:poly) : int = match p with
   | [] -> (-1)
   | _ -> List.rev p |> List.hd |> fst
 ;;
 
 let multXn (p:poly) (deg:int) : poly =
-  List.map (fun (d,c) -> (d+deg,c)) p
+  List.map (fun (d,c) -> (d + deg,c)) p
 ;;
 
 let (^^) = multXn;;
@@ -58,13 +59,13 @@ let cut (p:poly) (deg:int) =
 
 let renverse (order:int) (p:poly) = 
   if (degre p) <= order then 
-    List.rev_map (fun (d,c) -> (order-d,c)) p
+    List.rev_map (fun (d, c) -> (order - d, c)) p
   else 
     failwith "(deg p) > order"
 ;;
 
 let modulo (p:poly) (deg:int) : poly =
-  List.map (fun (d,c) -> (d-deg,c)) p
+  List.map (fun (d,c) -> d - deg, c) p
 ;;
 
 let mono_to_string (m:monome) : string = match m with
@@ -105,23 +106,23 @@ let rec mult_naive (p1:poly) (p2:poly) : poly = match p1 with
   | e1::lst -> (mult_naive [e1] p2) ^+ (mult_naive lst p2)
 ;;
 
+(** VERSION OPTI *)
 let karatsuba = 
   let rec (^*) (p1:poly) (p2:poly) : poly =  match p1, p2 with
     |([], _) | (_, []) -> []
-    |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
-    |([(0, b)], p)  |(p, [(0, b)]) -> (p ^: b)
+    | e1::[], e2::[] -> mult_naive [e1] [e2]
     | _ -> 
         let k = (max (degre p1) (degre p2)) in
         let k = k + (k mod 2) in
-        let mk = (k/2) in
-        let p1_0,p1_1 = cut p1 mk in
-        let p2_0,p2_1 = cut p2 mk in
-        let c0 = p1_0 ^* p2_0 in
-        let c2 = p1_1 ^* p2_1 in
-        let u = (p1_0 ^+ p1_1) ^* (p2_0 ^+ p2_1) in
+        let mk = (k / 2) in
+        let p1_0,p1_1 = cut p1 mk
+        and p2_0,p2_1 = cut p2 mk in
+        let c0 = p1_0 ^* p2_0
+        and c2 = p1_1 ^* p2_1
+        and u = (p1_0 ^+ p1_1) ^* (p2_0 ^+ p2_1) in
         let c1 =  (u ^- c0) ^- c2 in
         c0 ^+ (c1 ^^ mk) ^+ (c2 ^^ k)
-  in (^*) 
+  in (^*)
 ;;
 
 let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
