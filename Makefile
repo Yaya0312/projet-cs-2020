@@ -23,6 +23,6 @@ doc:
 	xdg-open _build/default/_doc/_html/index.html
 
 coverage : clean
-	BISECT_ENABLE=yes dune exec ./test/tests.exe
+	BISECT_ENABLE=yes dune exec ./test/tests.exe 
 	dune exec bisect-ppx-report -- html
 	xdg-open _coverage/index.html
