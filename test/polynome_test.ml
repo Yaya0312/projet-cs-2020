@@ -36,6 +36,24 @@ let sum_tests =
     ("p1 + []", `Quick, test_sum_p1_empty);
   ];;
 
+(*** ^= ***********************************************************************)
+let test_equality = Alcotest.check Alcotest.bool "equality";;
+
+let test_equality_p1_p1 () = test_equality true (p1 ^= p1);;
+let test_equality_p2_p2 () = test_equality true (p2 ^= p2);;
+let test_equality_p1_p2 () = test_equality false (p1 ^= p2);;
+let test_equality_p2_p1 () = test_equality false (p2 ^= p1);;
+let test_equality_empty_p1 () = test_equality false ([] ^= p1);;
+
+let equality_tests =
+  [
+    ("p1 ^= p1", `Quick, test_equality_p1_p1);
+    ("p2 ^= p2", `Quick, test_equality_p2_p2);
+    ("p1 ^= p2", `Quick, test_equality_p1_p2);
+    ("p1 ^= p2", `Quick, test_equality_p2_p1);
+    ("[] ^= p1", `Quick, test_equality_empty_p1);
+  ];;
+
 (*** multCoeff ****************************************************************)
 
 let test_multCoef  = Alcotest.check alcotestPoly "coef";;
