@@ -45,7 +45,7 @@ let rec sub_abs abs1 acc = match abs1 with
 ;;
 
 
-(* -------------------------- abs_of_string ----------------------------------*)
+(* --- abs_of_string ---------------------------------------------------------*)
 let abs_of_string (str:string) =
   let rec aux str acc result = 
     if (String.length str) <= (acc*4) then result
@@ -56,7 +56,7 @@ let abs_of_string (str:string) =
   in aux str 0 []
 ;;
 
-(* -------------------------- string_of_abs ----------------------------------*)
+(*** string_of_abs ************************************************************)
 let string_of_abs abs =
   let rec aux abs acc result = match abs with
     | (ind,num)::[] when ind = acc -> (string_of_int num)^result
