@@ -2,6 +2,7 @@
 type monome = (int*float);;
 type poly = monome list;;
 
+(* OPTIMISÉ AU MAX *)
 let rec coef (p:poly) (i:int) : float = match p with
   | [] -> 0.
   | (d,_)::_ when d > i -> 0.
@@ -9,27 +10,32 @@ let rec coef (p:poly) (i:int) : float = match p with
   | _::lst -> (coef [@tailcall]) lst i
 ;;
 
+(* TODO CLEAN CODE raccourcir *)
 let (^+) (p1:poly) (p2:poly) : poly = 
-  let rec aux p1 p2 (r:poly) = match p1,p2 with
+  let rec aux p1 p2 (r:poly) = match p1, p2 with
     | [],[] -> (List.rev r)
     | lst1, [] -> List.rev_append r lst1
     | [], lst2 -> List.rev_append r lst2
-    | (d1,c1)::lst1, (d2,_)::_ when d1 < d2 -> aux lst1 p2 ((d1,c1)::r)
+    | (d1,c1)::lst1, (d2,_)::_ when d1 < d2 -> 
+        (aux [@tailcall]) lst1 p2 ((d1, c1)::r)
     | (d1,c1)::lst1, (d2,c2)::lst2 when d1 = d2 -> 
         (aux [@tailcall]) lst1 lst2 (
           begin 
             let p = c1 +. c2 in
-            if (p = 0.) then r else ((d1,p)::r)
+            if (p = 0.) then r else ((d1, p)::r)
           end)
-    | _, (d2,c2)::lst2 -> (aux [@tailcall]) p1 lst2 ((d2, c2)::r)
+    | _, (d2,c2)::lst2 ->
+        (aux [@tailcall]) p1 lst2 ((d2, c2)::r)
   in aux p1 p2 []
 ;;
 
+(* OPTIMISÉ AU MAX *)
 let multCoeff (p:poly) (a:float) : poly = match a with
   | 0. -> []
-  | _ -> List.map (fun (d,c) ->(d, c*.a)) p
+  | _ -> List.map (fun (d, c) ->(d, c*. a)) p
 ;;
 
+(* TODO trouver un meilleur symbole *)
 let (^:) = multCoeff;;
 
 let (^-) (p1:poly) (p2:poly) : poly = 
@@ -40,23 +46,25 @@ let (^=) (p1:poly) (p2:poly) : bool =
   (p1 ^- p2) = []
 ;;
 
-(* A OPTIMISER , changer struct poly ?*)
+(* OPTIMISATION MAX IMPOSSIBLE. La liste n'a pas de pointeur de queue*)
 let degre (p:poly) : int = match p with
   | [] -> (-1)
   | _ -> List.rev p |> List.hd |> fst
 ;;
 
 let multXn (p:poly) (deg:int) : poly =
-  List.map (fun (d,c) -> (d + deg,c)) p
+  List.map (fun (d,c) -> (d + deg, c)) p
 ;;
 
 let (^^) = multXn;;
 
+(* OPTIMISÉ AU MAX *)
 let cut (p:poly) (deg:int) = 
-  match List.partition (fun (d,_) -> d < deg) p with
-  | p0,p1 -> p0 ,( p1 ^^ (-deg))
+  match List.partition (fun (d, _) -> d < deg) p with
+  | p0, p1 -> p0 ,( p1 ^^ (-deg))
 ;;
 
+(* OPTIMISÉ AU MAX *)
 let renverse (order:int) (p:poly) = 
   if (degre p) <= order then 
     List.rev_map (fun (d, c) -> (order - d, c)) p
@@ -64,23 +72,28 @@ let renverse (order:int) (p:poly) =
     failwith "(deg p) > order"
 ;;
 
+(* OPTIMISÉ AU MAX *)
 let modulo (p:poly) (deg:int) : poly =
   List.map (fun (d,c) -> d - deg, c) p
 ;;
 
+(* OPTIMISÉ AU MAX *)
 let mono_to_string (m:monome) : string = match m with
   | (d,c) -> (if (c >= 0.) then ("+") else "")^
              (string_of_int (int_of_float c)) ^ 
              (if (d = 0) then "" else "x^" ^ (string_of_int d) ^ " ")
 ;;
 
+(* OPTIMISÉ AU MAX *)
 let print_poly (p:poly) : unit = 
   let rec aux (p:poly) (s:string) = match p with
     | [] -> (print_string (s^"\n"))
     | (d,c)::lst -> aux lst ((mono_to_string (d,c))^s)
   in aux p ""
+[@@coverage off]
 ;;
 
+(* OPTIMISÉ AU MAX *)
 let horner (p:poly) (x:float) : float = 
   let rec aux (acc:float) (pos:int) (p:poly) = match p with 
     | [] -> acc
@@ -98,8 +111,10 @@ let random_poly (deg:int) ?(maxcoef=1073741823) (): poly =
       let coef = if coef = 0. then 1. else coef in
       aux ((pos, coef)::r) (pos - 1)
   in aux [] deg
+[@@coverage off]
 ;;
 
+(* OPTIMISÉ AU MAX *)
 let rec mult_naive (p1:poly) (p2:poly) : poly = match p1 with
   | [] -> []
   | (d,c)::[] -> List.map (fun (a,b) -> (a + d, b *. c) ) p2
@@ -125,6 +140,7 @@ let karatsuba =
   in (^*)
 ;;
 
+
 let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
   |([], _) | (_, []) -> []
   |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
@@ -133,15 +149,18 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
       let k = (max (degre p1) (degre p2)) in
       let k = k + 3 - (k mod 3) in
       let mk = (k/3) in
-      let p1_0, p_temp = cut p1 mk in
-      let p1_1, p1_2 = cut p_temp mk in
-      let p2_0, q_temp = cut p2 mk in
-      let p2_1, p2_2 = cut q_temp mk in
+      let p1_0, p_temp = cut p1 mk
+      and p2_0, q_temp = cut p2 mk in
+      let p1_1, p1_2 = cut p_temp mk
+      and p2_1, p2_2 = cut q_temp mk in
       let n = degre p1_0 + 1 in
       let r0 = toom_cook p1_0 p2_0 alpha in
-      let r1 = (toom_cook (p1_0 ^+ p1_1 ^+ p1_2) (p2_0 ^+ p2_1 ^+ p2_2) alpha) in
-      let r2 = (toom_cook (p1_0 ^+ p1_2 ^+ (p1_1 ^: (-1.))) (p2_0 ^+ p2_2 ^+ (p2_1 ^: (-1.))) alpha) in
-      let r3 = (toom_cook (p1_0 ^+ (p1_1 ^: alpha) ^+ (p1_2 ^: (alpha*.alpha))) (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha*.alpha))) alpha) in
+      let r1 = (toom_cook (p1_0 ^+ p1_1 ^+ p1_2)
+                  (p2_0 ^+ p2_1 ^+ p2_2) alpha) in
+      let r2 = (toom_cook (p1_0 ^+ p1_2 ^+ (p1_1 ^: (-1.)))
+                  (p2_0 ^+ p2_2 ^+ (p2_1 ^: (-1.))) alpha) in
+      let r3 = (toom_cook (p1_0 ^+ (p1_1 ^: alpha) ^+ (p1_2 ^: (alpha *. alpha)))
+                  (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha *. alpha))) alpha) in
       let r4 = (toom_cook p1_2 p2_2 alpha) in
       let res0 = r0 in
       let res1 = ((r0 ^: (-1.)) ^: (1./.alpha)) ^+ (r1 ^: (alpha /. (2. *. (alpha -. 1.)))) ^+ (r4 ^: alpha) ^+ (r2 ^: ((alpha *. -1.) /. (2. *. (alpha +. 1.)))) ^+ (r3 ^:  (-1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
