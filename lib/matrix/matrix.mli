@@ -1,6 +1,14 @@
 type 'a matrix = 'a array array;;
 
 (** 
+    [get_el m col row]
+    Retourne l'élement m_(i,j) 
+    Complexity O(1)
+*)
+val get_el : 'a matrix -> int -> int -> 'a
+
+
+(** 
     [get_row m i]
     Retourne la ligne i de la matrice m 
     Complexity O(1)
