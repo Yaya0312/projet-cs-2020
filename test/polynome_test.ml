@@ -73,11 +73,13 @@ let multCoef_tests =
 
 let test_degree = Alcotest.check Alcotest.int "degree"
 
+let test_degree_empty () = test_degree (-1) (degre []);;
 let test_degree_p1 () = test_degree 3 (degre p1);;
 let test_degree_p2 () = test_degree 4 (degre p2);;
 
 let degree_tests =
   [ 
+    ("degree empty", `Quick, test_degree_empty);
     ("degree p1", `Quick, test_degree_p1);
     ("degree p2", `Quick, test_degree_p2);
   ];;
