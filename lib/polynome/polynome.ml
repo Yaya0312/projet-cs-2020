@@ -35,11 +35,10 @@ let multCoeff (p:poly) (a:float) : poly = match a with
   | _ -> List.map (fun (d, c) ->(d, c*. a)) p
 ;;
 
-(* TODO trouver un meilleur symbole *)
-let (^:) = multCoeff;;
+let (^.) (a:float) (p:poly) = multCoeff p a;;
 
 let (^-) (p1:poly) (p2:poly) : poly = 
-  p1 ^+ (p2 ^: (-1.))
+  p1 ^+ ((-1.) ^. p2)
 ;;
 
 let (^=) (p1:poly) (p2:poly) : bool = 
@@ -144,7 +143,7 @@ let karatsuba =
 let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
   |([], _) | (_, []) -> []
   |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
-  |([(0, b)], p)  | (p, [(0, b)]) -> (p ^: b)
+  |([(0, b)], p)  | (p, [(0, b)]) -> (b ^. p)
   | _ ->
       let k = (max (degre p1) (degre p2)) in
       let k = k + 3 - (k mod 3) in
@@ -154,26 +153,33 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
       let p1_1, p1_2 = cut p_temp mk
       and p2_1, p2_2 = cut q_temp mk in
       let n = degre p1_0 + 1 in
+      let alpha_squared = alpha *. alpha in
+      let var1 = -1. /. (2. *. (alpha -. 1.))
+      and var2 = -1. /. (2. *. (alpha +. 1.))
+      and var3 = 1. /. (alpha *. (alpha_squared -. 1.))
+      and var4 = alpha /. (2. *. (alpha +. 1.))
+      and var6 = (1. /. alpha) in
       let r0 = toom_cook p1_0 p2_0 alpha in
-      let r1 = (toom_cook (p1_0 ^+ p1_1 ^+ p1_2)
-                  (p2_0 ^+ p2_1 ^+ p2_2) alpha) in
-      let r2 = (toom_cook (p1_0 ^+ p1_2 ^+ (p1_1 ^: (-1.)))
-                  (p2_0 ^+ p2_2 ^+ (p2_1 ^: (-1.))) alpha) in
-      let r3 = (toom_cook (p1_0 ^+ (p1_1 ^: alpha) ^+ (p1_2 ^: (alpha *. alpha)))
-                  (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha *. alpha))) alpha) in
-      let r4 = (toom_cook p1_2 p2_2 alpha) in
-      let res1 = ((r0 ^: (-1.)) ^: (1. /. alpha)) ^+
-                 (r1 ^: (alpha /. (2. *. (alpha -. 1.)))) ^+ 
-                 (r4 ^: alpha) ^+ 
-                 (r2 ^: ((alpha *. -1.) /. (2. *. (alpha +. 1.)))) ^+ 
-                 (r3 ^:  (-1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
-      let res2 = ((r1 ^+ r2) ^: (1./.2.)) ^- (r0 ^+ r4) in
-      let res3 = (r0 ^: (1. /. alpha)) ^+ 
-                 (r1 ^: (-1. /. (2. *. (alpha -. 1.)))) ^+ 
-                 (r4 ^: (alpha *. -1.)) ^+ 
-                 (r2 ^: (-1. /. (2. *. (alpha +. 1.))))  ^+ 
-                 (r3 ^: (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
-      r0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2 * n)) ^+ (res3 ^^ (3 * n)) ^+ (r4 ^^ (4 * n))
+      let r1 = toom_cook (p1_0 ^+ p1_1 ^+ p1_2) (p2_0 ^+ p2_1 ^+ p2_2) alpha
+      and r2 = toom_cook (p1_0 ^+ p1_2 ^- p1_1) (p2_0 ^+ p2_2 ^- p2_1) alpha
+      and r3 = toom_cook
+          (p1_0 ^+ (alpha ^. p1_1) ^+ (alpha_squared ^. p1_2))
+          (p2_0 ^+ (alpha ^. p2_1) ^+ (alpha_squared ^. p2_2))
+          alpha
+      and r4 = toom_cook p1_2 p2_2 alpha in
+      let res1 = (-.var6 ^. r0) ^+
+                 (-.alpha *. var1 ^. r1) ^+ 
+                 (-.var4 ^. r2) ^+ (* var4 = - alpha * var2 BUG PRECISION ? *)
+                 (-.var3 ^. r3) ^+
+                 (alpha ^. r4) 
+      and res2 = 0.5 ^. (r1 ^+ r2 ^- (2. ^. (r0 ^+ r4)))
+      and res3 = (var6 ^. r0) ^+
+                 (var1 ^. r1) ^+
+                 (var2 ^. r2) ^+ 
+                 (var3 ^. r3) ^+
+                 (-.alpha ^. r4) in
+      r0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2 * n)) ^+ (res3 ^^ (3 * n)) ^+
+      (r4 ^^ (4 * n))
 ;;
 
 let toom_cook3 (p1:poly) (p2:poly) (alpha:float) =
