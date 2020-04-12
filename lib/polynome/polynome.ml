@@ -163,11 +163,19 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
                   (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha *. alpha))) alpha) in
       let r4 = (toom_cook p1_2 p2_2 alpha) in
       let res0 = r0 in
-      let res1 = ((r0 ^: (-1.)) ^: (1./.alpha)) ^+ (r1 ^: (alpha /. (2. *. (alpha -. 1.)))) ^+ (r4 ^: alpha) ^+ (r2 ^: ((alpha *. -1.) /. (2. *. (alpha +. 1.)))) ^+ (r3 ^:  (-1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
-      let res2 = (r0 ^: (-1.)) ^+ (r4 ^: (-1.)) ^+ ((r1 ^+ r2) ^: (1./.2.)) in
-      let res3 = (r0 ^: (1./.alpha)) ^+ (r1 ^: (-1. /. (2. *. (alpha -. 1.)))) ^+ (r4 ^: (alpha *. -1.)) ^+ (r2 ^: (-1. /. (2. *. (alpha +. 1.))))  ^+ (r3 ^: (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
+      let res1 = ((r0 ^: (-1.)) ^: (1. /. alpha)) ^+
+                 (r1 ^: (alpha /. (2. *. (alpha -. 1.)))) ^+ 
+                 (r4 ^: alpha) ^+ 
+                 (r2 ^: ((alpha *. -1.) /. (2. *. (alpha +. 1.)))) ^+ 
+                 (r3 ^:  (-1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
+      let res2 = ((r1 ^+ r2) ^: (1./.2.)) ^- (r0 ^+ r4) in
+      let res3 = (r0 ^: (1. /. alpha)) ^+ 
+                 (r1 ^: (-1. /. (2. *. (alpha -. 1.)))) ^+ 
+                 (r4 ^: (alpha *. -1.)) ^+ 
+                 (r2 ^: (-1. /. (2. *. (alpha +. 1.))))  ^+ 
+                 (r3 ^: (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
       let res4 = r4 in
-      res0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2*n)) ^+ (res3 ^^ (3*n)) ^+ (res4 ^^ (4*n))
+      res0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2 * n)) ^+ (res3 ^^ (3 * n)) ^+ (res4 ^^ (4 * n))
 ;;
 
 let toom_cook3 (p1:poly) (p2:poly) (alpha:float) =
