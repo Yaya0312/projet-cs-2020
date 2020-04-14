@@ -2,6 +2,10 @@
 
 default: build-prod
 
+
+utop:
+	dune utop
+
 deps:
 	opam install -y --deps-only .
 
