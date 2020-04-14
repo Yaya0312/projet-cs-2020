@@ -149,7 +149,7 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
   | _ ->
       let k = (max (degre p1) (degre p2)) in
       let k = k + 3 - (k mod 3) in
-      let mk = (k/3) in
+      let mk = (k / 3) in
       let p1_0, p_temp = cut p1 mk in
       let p2_0, q_temp = cut p2 mk in
       let p1_1, p1_2 = cut p_temp mk in
@@ -160,8 +160,8 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
           (p1_0 ^+ p1_1 ^+ p1_2)
           (p2_0 ^+ p2_1 ^+ p2_2) alpha in
       let r2 = toom_cook
-          (p1_0 ^+ p1_2 ^+ (p1_1 ^: (-1.)))
-          (p2_0 ^+ p2_2 ^+ (p2_1 ^: (-1.))) alpha in
+          (p1_0 ^+ p1_2 ^- p1_1)
+          (p2_0 ^+ p2_2 ^- p2_1) alpha in
       let r3 = toom_cook
           (p1_0 ^+ (p1_1 ^: alpha) ^+ (p1_2 ^: (alpha*.alpha)))
           (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha*.alpha))) alpha in
