@@ -145,27 +145,41 @@ let karatsuba =
 let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
   |([], _) | (_, []) -> []
   |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
-  |([(0, b)], p)  | (p, [(0, b)]) -> (p ^: b)
+  |([(0, b)], p)  | (p, [(0, b)]) -> (b ^. p)
   | _ ->
       let k = (max (degre p1) (degre p2)) in
       let k = k + 3 - (k mod 3) in
       let mk = (k/3) in
       let p1_0, p_temp = cut p1 mk in
-      let p1_1, p1_2 = cut p_temp mk in
       let p2_0, q_temp = cut p2 mk in
+      let p1_1, p1_2 = cut p_temp mk in
       let p2_1, p2_2 = cut q_temp mk in
       let n = degre p1_0 + 1 in
       let r0 = toom_cook p1_0 p2_0 alpha in 
-      let r1 = (toom_cook (p1_0 ^+ p1_1 ^+ p1_2) (p2_0 ^+ p2_1 ^+ p2_2) alpha) in
-      let r2 = (toom_cook (p1_0 ^+ p1_2 ^+ (p1_1 ^: (-1.))) (p2_0 ^+ p2_2 ^+ (p2_1 ^: (-1.))) alpha) in
-      let r3 = (toom_cook (p1_0 ^+ (p1_1 ^: alpha) ^+ (p1_2 ^: (alpha*.alpha))) (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha*.alpha))) alpha) in
-      let r4 = (toom_cook p1_2 p2_2 alpha) in
-      let res0 = r0 in
-      let res1 = ((r0 ^: (-1.)) ^: (1./.alpha)) ^+ ((r1 ^: (1./.2.)) ^: (alpha /. (alpha -. 1.))) ^+ (r4 ^: alpha) ^+ (((r2 ^: (1./.2.)) ^: (alpha /. (alpha +. 1.))) ^: (-1.)) ^+ ((r3 ^:  (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) ^: (-1.)) in
-      let res2 = (r0 ^: (-1.)) ^+ (r4 ^: (-1.)) ^+ ((r1 ^+ r2) ^: (1./.2.)) in
-      let res3 = (r0 ^: (1./.alpha)) ^+ ((r1 ^: 1./.(2. *. (alpha -. 1.))) ^: (-1.)) ^+ ((r4 ^: alpha) ^: (-1.)) ^+ ((r2 ^: 1./.(2. *. (alpha +. 1.))) ^: (-1.)) ^+ (r3 ^: (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
-      let res4 = r4 in
-      res0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2*n)) ^+ (res3 ^^ (3*n)) ^+ (res4 ^^ (4*n))
+      let r1 = toom_cook 
+          (p1_0 ^+ p1_1 ^+ p1_2)
+          (p2_0 ^+ p2_1 ^+ p2_2) alpha in
+      let r2 = toom_cook
+          (p1_0 ^+ p1_2 ^+ (p1_1 ^: (-1.)))
+          (p2_0 ^+ p2_2 ^+ (p2_1 ^: (-1.))) alpha in
+      let r3 = toom_cook
+          (p1_0 ^+ (p1_1 ^: alpha) ^+ (p1_2 ^: (alpha*.alpha)))
+          (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha*.alpha))) alpha in
+      let r4 = toom_cook p1_2 p2_2 alpha in
+      let res1 = ((r0 ^: (-1.)) ^: (1./.alpha)) ^+ 
+                 ((r1 ^: (1./.2.)) ^: (alpha /. (alpha -. 1.))) ^+ 
+                 (r4 ^: alpha) ^+ 
+                 (((r2 ^: (1./.2.)) ^: (alpha /. (alpha +. 1.))) ^: (-1.)) ^+ 
+                 ((r3 ^:  (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) ^: (-1.)) in
+      let res2 = (r0 ^: (-1.)) ^+ 
+                 (r4 ^: (-1.)) ^+ 
+                 ((r1 ^+ r2) ^: (1./.2.)) in
+      let res3 = (r0 ^: (1./.alpha)) ^+ 
+                 ((r1 ^: 1./.(2. *. (alpha -. 1.))) ^: (-1.)) ^+ 
+                 ((r4 ^: alpha) ^: (-1.)) ^+ 
+                 ((r2 ^: 1./.(2. *. (alpha +. 1.))) ^: (-1.)) ^+ 
+                 (r3 ^: (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
+      r0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2*n)) ^+ (res3 ^^ (3*n)) ^+ (r4 ^^ (4*n))
 ;;
 
 let toom_cook3 (p1:poly) (p2:poly) (alpha:float) =
