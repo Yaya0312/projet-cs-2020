@@ -153,6 +153,15 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
       let p1_1, p1_2 = cut p_temp mk in
       let p2_1, p2_2 = cut q_temp mk in
       let n = degre p1_0 + 1 in
+      let var1 = -.1./.alpha in
+      let var2 =   alpha /. (2. *. (alpha -. 1.)) in
+      let var3 = -.alpha /. (2. *. (alpha +. 1.)) in
+      let var4 = -.1. /. (alpha *. ((alpha *. alpha) -. 1.)) in
+      let var5 = 1. /. (alpha *. ((alpha *. alpha) -. 1.)) in
+      let var6 = -.1./.(2. *. (alpha +. 1.)) in
+      let var7 = -.1./.(2. *. (alpha -. 1.)) in
+      let alpha_squared = alpha*.alpha in
+      let var8 = (1./.alpha) in
       let r0 = toom_cook p1_0 p2_0 alpha in 
       let r1 = toom_cook
           (p1_0 ^+ p1_1 ^+ p1_2)
@@ -161,22 +170,20 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
           (p1_0 ^+ p1_2 ^- p1_1)
           (p2_0 ^+ p2_2 ^- p2_1) alpha in
       let r3 = toom_cook
-          (p1_0 ^+ (alpha ^. p1_1) ^+ ((alpha*.alpha) ^. p1_2))
-          (p2_0 ^+ (alpha ^. p2_1) ^+ ((alpha*.alpha) ^. p2_2)) alpha in
+          (p1_0 ^+ (alpha ^. p1_1) ^+ (alpha_squared ^. p1_2))
+          (p2_0 ^+ (alpha ^. p2_1) ^+ (alpha_squared ^. p2_2)) alpha in
       let r4 = toom_cook p1_2 p2_2 alpha in
-      let res1 = ((-.1./.alpha) ^. r0) ^+
-                 ((alpha /. (alpha -. 1.)) ^. ((1./.2.) ^. r1)) ^+ 
-                 (alpha ^. r4) ^+
-                 (((-.alpha /. (alpha +. 1.)) ^. ((1./.2.) ^. r2))) ^+ 
-                 ((-.1. /. (alpha *. ((alpha *. alpha) -. 1.))) ^. r3) in
-      let res2 = (-1. ^. r0) ^+
-                 (-1. ^. r4) ^+
-                 ((1./.2.) ^. (r1 ^+ r2)) in
-      let res3 = ((1./.alpha) ^. r0) ^+
-                 ((-.1./.(2. *. (alpha -. 1.)) ^. r1)) ^+
-                 (-.alpha ^. r4) ^+
-                 (-.1./.(2. *. (alpha +. 1.)) ^. r2) ^+
-                 ((1. /. (alpha *. ((alpha *. alpha) -. 1.))) ^. r3) in
+      let res1 = (alpha ^. r4) ^+
+                 (var1 ^. r0) ^+
+                 (var2 ^. r1) ^+
+                 (var3 ^. r2) ^+
+                 (var4 ^. r3) in
+      let res2 = ((1./.2.) ^. (r1 ^+ r2)) ^+ (-1. ^. (r0 ^+ r4)) in
+      let res3 = (-.alpha ^. r4) ^+
+                 (var8 ^. r0) ^+
+                 (var7 ^. r1) ^+
+                 (var6 ^. r2) ^+
+                 (var5 ^. r3) in
       r0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2*n)) ^+ (res3 ^^ (3*n)) ^+ (r4 ^^ (4*n))
 ;;
 
