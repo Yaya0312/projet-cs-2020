@@ -37,8 +37,6 @@ let multCoeff (p:poly) (a:float) : poly = match a with
 
 let (^.) (a:float) (p:poly) = multCoeff p a;;
 
-(** déprécié *)
-let (^:) = multCoeff;;
 
 let (^-) (p1:poly) (p2:poly) : poly = 
   p1 ^+ ((-1.) ^. p2)
@@ -169,15 +167,15 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
       let res1 = ((-.1./.alpha) ^. r0) ^+
                  ((alpha /. (alpha -. 1.)) ^. ((1./.2.) ^. r1)) ^+ 
                  (alpha ^. r4) ^+
-                 (((alpha /. (alpha +. 1.)) ^. ((1./.2.) ^. r2)) ^: (-1.)) ^+ 
-                 ((-1.) ^. (r3 ^:  (1. /. (alpha *. ((alpha *. alpha) -. 1.))))) in
+                 (((-.alpha /. (alpha +. 1.)) ^. ((1./.2.) ^. r2))) ^+ 
+                 ((-.1. /. (alpha *. ((alpha *. alpha) -. 1.))) ^. r3) in
       let res2 = (-1. ^. r0) ^+
                  (-1. ^. r4) ^+
                  ((1./.2.) ^. (r1 ^+ r2)) in
       let res3 = ((1./.alpha) ^. r0) ^+
                  ((-.1./.(2. *. (alpha -. 1.)) ^. r1)) ^+
                  (-.alpha ^. r4) ^+
-                 (-.1./.(2. *. (alpha +. 1.)) ^. r2 ) ^+
+                 (-.1./.(2. *. (alpha +. 1.)) ^. r2) ^+
                  ((1. /. (alpha *. ((alpha *. alpha) -. 1.))) ^. r3) in
       r0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2*n)) ^+ (res3 ^^ (3*n)) ^+ (r4 ^^ (4*n))
 ;;
