@@ -156,29 +156,29 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
       let p2_1, p2_2 = cut q_temp mk in
       let n = degre p1_0 + 1 in
       let r0 = toom_cook p1_0 p2_0 alpha in 
-      let r1 = toom_cook 
+      let r1 = toom_cook
           (p1_0 ^+ p1_1 ^+ p1_2)
           (p2_0 ^+ p2_1 ^+ p2_2) alpha in
       let r2 = toom_cook
           (p1_0 ^+ p1_2 ^- p1_1)
           (p2_0 ^+ p2_2 ^- p2_1) alpha in
       let r3 = toom_cook
-          (p1_0 ^+ (p1_1 ^: alpha) ^+ (p1_2 ^: (alpha*.alpha)))
-          (p2_0 ^+ (p2_1 ^: alpha) ^+ (p2_2 ^: (alpha*.alpha))) alpha in
+          (p1_0 ^+ (alpha ^. p1_1) ^+ ((alpha*.alpha) ^. p1_2))
+          (p2_0 ^+ (alpha ^. p2_1) ^+ ((alpha*.alpha) ^. p2_2)) alpha in
       let r4 = toom_cook p1_2 p2_2 alpha in
-      let res1 = ((r0 ^: (-1.)) ^: (1./.alpha)) ^+ 
-                 ((r1 ^: (1./.2.)) ^: (alpha /. (alpha -. 1.))) ^+ 
-                 (r4 ^: alpha) ^+ 
-                 (((r2 ^: (1./.2.)) ^: (alpha /. (alpha +. 1.))) ^: (-1.)) ^+ 
-                 ((r3 ^:  (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) ^: (-1.)) in
-      let res2 = (r0 ^: (-1.)) ^+ 
-                 (r4 ^: (-1.)) ^+ 
-                 ((r1 ^+ r2) ^: (1./.2.)) in
-      let res3 = (r0 ^: (1./.alpha)) ^+ 
-                 ((r1 ^: 1./.(2. *. (alpha -. 1.))) ^: (-1.)) ^+ 
-                 ((r4 ^: alpha) ^: (-1.)) ^+ 
-                 ((r2 ^: 1./.(2. *. (alpha +. 1.))) ^: (-1.)) ^+ 
-                 (r3 ^: (1. /. (alpha *. ((alpha *. alpha) -. 1.)))) in
+      let res1 = ((-.1./.alpha) ^. r0) ^+
+                 ((alpha /. (alpha -. 1.)) ^. ((1./.2.) ^. r1)) ^+ 
+                 (alpha ^. r4) ^+
+                 (((alpha /. (alpha +. 1.)) ^. ((1./.2.) ^. r2)) ^: (-1.)) ^+ 
+                 ((-1.) ^. (r3 ^:  (1. /. (alpha *. ((alpha *. alpha) -. 1.))))) in
+      let res2 = (-1. ^. r0) ^+
+                 (-1. ^. r4) ^+
+                 ((1./.2.) ^. (r1 ^+ r2)) in
+      let res3 = ((1./.alpha) ^. r0) ^+
+                 ((-.1./.(2. *. (alpha -. 1.)) ^. r1)) ^+
+                 (-.alpha ^. r4) ^+
+                 (-.1./.(2. *. (alpha +. 1.)) ^. r2 ) ^+
+                 ((1. /. (alpha *. ((alpha *. alpha) -. 1.))) ^. r3) in
       r0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2*n)) ^+ (res3 ^^ (3*n)) ^+ (r4 ^^ (4*n))
 ;;
 
