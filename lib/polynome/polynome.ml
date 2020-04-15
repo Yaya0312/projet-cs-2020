@@ -148,38 +148,38 @@ let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
       let k = (max (degre p1) (degre p2)) in
       let k = k + 3 - (k mod 3) in
       let mk = (k / 3) in
-      let p1_0, p_temp = cut p1 mk in
-      let p2_0, q_temp = cut p2 mk in
-      let p1_1, p1_2 = cut p_temp mk in
-      let p2_1, p2_2 = cut q_temp mk in
-      let n = degre p1_0 + 1 in
-      let alpha_squared = alpha *. alpha in
-      let var5 =   1. /. (alpha *. (alpha_squared -. 1.)) in
-      let var6 = -.1. /. (2. *. (alpha +. 1.)) in
-      let var7 = -.1./. (2. *. (alpha -. 1.)) in 
-      let var8 = 1./.alpha in
-      let r0 = toom_cook p1_0 p2_0 alpha in 
-      let r1 = toom_cook
+      let p1_0, p_temp = cut p1 mk
+      and p2_0, q_temp = cut p2 mk in
+      let p1_1, p1_2 = cut p_temp mk
+      and p2_1, p2_2 = cut q_temp mk in
+      let n = degre p1_0 + 1
+      and alpha_squared = alpha *. alpha in
+      let var0 = 1./.alpha
+      and var1 = -.1. /. (2. *. (alpha -. 1.))
+      and var2 = -.1. /. (2. *. (alpha +. 1.))
+      and var3 =   1. /. (alpha *. (alpha_squared -. 1.)) in
+      let r0 = toom_cook p1_0 p2_0 alpha
+      and r1 = toom_cook
           (p1_0 ^+ p1_1 ^+ p1_2)
-          (p2_0 ^+ p2_1 ^+ p2_2) alpha in
-      let r2 = toom_cook
+          (p2_0 ^+ p2_1 ^+ p2_2) alpha
+      and r2 = toom_cook
           (p1_0 ^+ p1_2 ^- p1_1)
-          (p2_0 ^+ p2_2 ^- p2_1) alpha in
-      let r3 = toom_cook
+          (p2_0 ^+ p2_2 ^- p2_1) alpha
+      and r3 = toom_cook
           (p1_0 ^+ (alpha ^. p1_1) ^+ (alpha_squared ^. p1_2))
-          (p2_0 ^+ (alpha ^. p2_1) ^+ (alpha_squared ^. p2_2)) alpha in
-      let r4 = toom_cook p1_2 p2_2 alpha in
+          (p2_0 ^+ (alpha ^. p2_1) ^+ (alpha_squared ^. p2_2)) alpha
+      and r4 = toom_cook p1_2 p2_2 alpha in
       let res1 = (alpha ^. r4) ^+
-                 (-.var8            ^. r0) ^+
-                 (var7 *. (-.alpha) ^. r1) ^+
-                 (var6 *. alpha     ^. r2) ^+
-                 (-.var5            ^. r3) in
-      let res2 = ((1./.2.) ^. (r1 ^+ r2)) ^+ (-1. ^. (r0 ^+ r4)) in
-      let res3 = (-.alpha ^. r4) ^+
-                 (var8 ^. r0) ^+
-                 (var7 ^. r1) ^+
-                 (var6 ^. r2) ^+
-                 (var5 ^. r3) in
+                 (           -.var0 ^. r0) ^+
+                 (-.alpha *.   var1 ^. r1) ^+
+                 (alpha *.     var2 ^. r2) ^+
+                 (           -.var3 ^. r3)
+      and res2 = ((1./.2.) ^. (r1 ^+ r2)) ^+ (-1. ^. (r0 ^+ r4))
+      and res3 = (-.alpha ^. r4) ^+
+                 (var0 ^. r0) ^+
+                 (var1 ^. r1) ^+
+                 (var2 ^. r2) ^+
+                 (var3 ^. r3) in
       r0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2*n)) ^+ (res3 ^^ (3*n)) ^+ (r4 ^^ (4*n))
 ;;
 
