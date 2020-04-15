@@ -39,7 +39,7 @@ let (^.) (a:float) (p:poly) = multCoeff p a;;
 
 
 let (^-) (p1:poly) (p2:poly) : poly = 
-  p1 ^+ ((-1.) ^. p2)
+  (((-1.) ^.p2) ^+ p1)
 ;;
 
 let (^=) (p1:poly) (p2:poly) : bool = 
@@ -140,52 +140,54 @@ let karatsuba =
   in (^*)
 ;;
 
-let rec toom_cook (p1:poly) (p2:poly) (alpha:float) = match p1, p2 with
+let rec toom_cook (p:poly) (q:poly) (alpha:float) = match p, q with
   |([], _) | (_, []) -> []
   |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
   |([(0, b)], p)  | (p, [(0, b)]) -> (b ^. p)
   | _ ->
-      let k = (max (degre p1) (degre p2)) in
+      let k = (max (degre p) (degre q)) in
       let k = k + 3 - (k mod 3) in
       let mk = (k / 3) in
-      let p1_0, p_temp = cut p1 mk
-      and p2_0, q_temp = cut p2 mk in
-      let p1_1, p1_2 = cut p_temp mk
-      and p2_1, p2_2 = cut q_temp mk in
-      let n = degre p1_0 + 1
+      let p0, p_temp = cut p mk
+      and q0, q_temp = cut q mk in
+      let p1, p2 = cut p_temp mk
+      and q1, q2 = cut q_temp mk in
+      let n = degre p0 + 1
       and alpha_squared = alpha *. alpha in
       let var0 = 1./.alpha
       and var1 = -.1. /. (2. *. (alpha -. 1.))
       and var2 = -.1. /. (2. *. (alpha +. 1.))
       and var3 =   1. /. (alpha *. (alpha_squared -. 1.)) in
-      let r0 = toom_cook p1_0 p2_0 alpha
-      and r1 = toom_cook
-          (p1_0 ^+ p1_1 ^+ p1_2)
-          (p2_0 ^+ p2_1 ^+ p2_2) alpha
-      and r2 = toom_cook
-          (p1_0 ^+ p1_2 ^- p1_1)
-          (p2_0 ^+ p2_2 ^- p2_1) alpha
-      and r3 = toom_cook
-          (p1_0 ^+ (alpha ^. p1_1) ^+ (alpha_squared ^. p1_2))
-          (p2_0 ^+ (alpha ^. p2_1) ^+ (alpha_squared ^. p2_2)) alpha
-      and r4 = toom_cook p1_2 p2_2 alpha in
-      let res1 = (alpha ^. r4) ^+
-                 (           -.var0 ^. r0) ^+
-                 (-.alpha *.   var1 ^. r1) ^+
-                 (alpha *.     var2 ^. r2) ^+
-                 (           -.var3 ^. r3)
-      and res2 = ((1./.2.) ^. (r1 ^+ r2)) ^+ (-1. ^. (r0 ^+ r4))
-      and res3 = (-.alpha ^. r4) ^+
-                 (var0 ^. r0) ^+
-                 (var1 ^. r1) ^+
-                 (var2 ^. r2) ^+
-                 (var3 ^. r3) in
-      r0 ^+ (res1 ^^ n) ^+ (res2 ^^ (2*n)) ^+ (res3 ^^ (3*n)) ^+ (r4 ^^ (4*n))
+      let i_0 = toom_cook p0 q0 alpha
+      and i_1 = toom_cook
+          (p0 ^+ p1 ^+ p2)
+          (q0 ^+ q1 ^+ q2) alpha
+      and i_neg_1 = toom_cook
+          (p0 ^+ p2 ^- p1)
+          (q0 ^+ q2 ^- q1) alpha
+      and i_alpha = toom_cook
+          (p0 ^+ (alpha ^. p1) ^+ (alpha_squared ^. p2))
+          (q0 ^+ (alpha ^. q1) ^+ (alpha_squared ^. q2)) alpha
+      and i_inf = toom_cook p2 q2 alpha in
+      let r0 = i_0
+      and r1 = (var3 ^. i_alpha) ^+
+               (alpha ^. i_inf) ^-
+               (var0 ^. i_0) ^-
+               ((alpha *. var1) ^. i_1) ^+
+               ((alpha *. var2) ^. i_neg_1)
+      and r2 = ((0.5) ^. (i_1 ^+ i_neg_1)) ^-
+               i_0 ^- i_inf 
+      and r3 = (var3 ^. i_inf) ^+
+               (var0 ^. i_0) ^+
+               (var1 ^. i_1) ^-
+               (var2 ^. i_neg_1)
+      and r4 = i_inf in
+      r0 ^+ (r1 ^^ n) ^+ (r2 ^^ (2*n)) ^+ (r3 ^^ (3*n)) ^+ (r4 ^^ (4*n))
 ;;
 
-let toom_cook3 (p1:poly) (p2:poly) (alpha:float) =
+let toom_cook3 (p:poly) (q:poly) (alpha:float) =
   if (alpha = 1. || alpha = 0. || alpha = -1.) then
     failwith "Donner un autre alpha, DIVISION PAR 0"
   else
-    toom_cook p1 p2 alpha
+    toom_cook p q alpha
 ;; 
