@@ -140,6 +140,16 @@ let karatsuba =
   in (^*)
 ;;
 
+let cut_list (p:poly) (k:int) (i:int) : (poly list) =
+  let rec aux (acc:poly list) (p:poly) (i:int) = 
+    if i <= 1 then 
+      acc@[p]
+    else
+      let p0, p1 = cut p k in
+      aux (acc@[p0]) p1 (i-1)
+  in aux [] p i
+;;
+
 let rec toom_cook (p:poly) (q:poly) (alpha:float) = match p, q with
   |([], _) | (_, []) -> []
   |([(0, 0.)], _) | (_ ,[(0, 0.)]) -> [(0, 0.)]
@@ -148,10 +158,8 @@ let rec toom_cook (p:poly) (q:poly) (alpha:float) = match p, q with
       let k = (max (degre p) (degre q)) in
       let k = k + 3 - (k mod 3) in
       let mk = (k / 3) in
-      let p0, p_temp = cut p mk
-      and q0, q_temp = cut q mk in
-      let p1, p2 = cut p_temp mk
-      and q1, q2 = cut q_temp mk in
+      let [p0;p1;p2] = cut_list p mk 3
+      and [q0;q1;q2] = cut_list p mk 3 in
       let n = degre p0 + 1
       and alpha_squared = alpha *. alpha in
       let var0 = 1./.alpha
