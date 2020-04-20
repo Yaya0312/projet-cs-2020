@@ -166,13 +166,13 @@ let mult_naive_tests =
 (*** mult toom_cook3 ***********************************************************)
 
 let test_mult_t3 = Alcotest.check alcotestPoly "multiplication toom_cook3";;
-let test_mult_t3_p1_p2 () = test_mult_t3 r1 (toom_cook3 p1 p2 0.1);;
-let test_mult_t3_p1_p1 () = test_mult_t3 r2 (toom_cook3 p1 p1 0.1);;
-let test_mult_t3_p2_p2 () = test_mult_t3 r3 (toom_cook3 p2 p2 0.1);;
-let test_mult_t3_p1_empty () = test_mult_t3 [] (toom_cook3 p1 [] 0.1);;
-let test_mult_t3_empty_p1 () = test_mult_t3 [] (toom_cook3 [] p1 0.1);;
-let test_mult_t3_p2_empty () = test_mult_t3 [] (toom_cook3 p2 [] 0.1);;
-let test_mult_t3_empty_p2 () = test_mult_t3 [] (toom_cook3 [] p2 0.1);;
+let test_mult_t3_p1_p2 () = test_mult_t3 r1 (toom_cook3 p1 p2 0.5);;
+let test_mult_t3_p1_p1 () = test_mult_t3 r2 (toom_cook3 p1 p1 0.5);;
+let test_mult_t3_p2_p2 () = test_mult_t3 r3 (toom_cook3 p2 p2 0.5);;
+let test_mult_t3_p1_empty () = test_mult_t3 [] (toom_cook3 p1 [] 0.5);;
+let test_mult_t3_empty_p1 () = test_mult_t3 [] (toom_cook3 [] p1 0.5);;
+let test_mult_t3_p2_empty () = test_mult_t3 [] (toom_cook3 p2 [] 0.5);;
+let test_mult_t3_empty_p2 () = test_mult_t3 [] (toom_cook3 [] p2 0.5);;
 
 let mult_toom_cook3_tests =
   [
